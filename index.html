@@ -435,12 +435,29 @@
     }
 
     .carousel-item .work-thumb {
+        position: relative;
         flex: 1;
         min-height: clamp(200px, 36vh, 420px);
         border-radius: 14px;
         border: 1px solid rgba(255, 255, 255, .09);
+        overflow: hidden;
         transition: border-color .4s ease;
     }
+
+    .carousel-item .work-thumb img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        transition: transform .65s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .carousel-item:hover .work-thumb img { transform: scale(1.045); }
+
+    .carousel-3d.is-dragging .carousel-item:hover .work-thumb img { transform: none; }
 
     .carousel-item:hover .work-thumb { border-color: rgba(255, 255, 255, .24); }
 
@@ -1270,14 +1287,16 @@
                             <article class="carousel-item">
                                 <div class="card-float">
                                     <div class="card-inner">
-                                        <div class="work-thumb" aria-hidden="true"></div>
+                                        <div class="work-thumb">
+                                            <img src="assets/work-01.jpg" alt="田园纪事 · 角色设定与分镜画布" loading="lazy" decoding="async">
+                                        </div>
                                         <div class="card-body">
                                             <div class="work-meta">
                                                 <span class="work-index">01</span>
-                                                <span class="work-tag">Canvas</span>
+                                                <span class="work-tag">Storyboard</span>
                                             </div>
-                                            <h3 class="work-title">星轨可视化</h3>
-                                            <p class="work-desc">用粒子与光线描绘恒星运动轨迹的交互实验。</p>
+                                            <h3 class="work-title">田园纪事</h3>
+                                            <p class="work-desc">祖孙、柴犬与菜园的田园叙事。从角色三视图、道具到场景分镜，一条短片在画布上的完整推演过程。</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1286,14 +1305,16 @@
                             <article class="carousel-item">
                                 <div class="card-float">
                                     <div class="card-inner">
-                                        <div class="work-thumb" aria-hidden="true"></div>
+                                        <div class="work-thumb">
+                                            <img src="assets/work-02.jpg" alt="琴键之下 · 室内演奏影像画布" loading="lazy" decoding="async">
+                                        </div>
                                         <div class="card-body">
                                             <div class="work-meta">
                                                 <span class="work-index">02</span>
-                                                <span class="work-tag">Interaction</span>
+                                                <span class="work-tag">Character</span>
                                             </div>
-                                            <h3 class="work-title">深空导航</h3>
-                                            <p class="work-desc">以视差与景深构建的沉浸式浏览体验。</p>
+                                            <h3 class="work-title">琴键之下</h3>
+                                            <p class="work-desc">以手部特写与琴房光影构建的室内演奏片段，镜头在小景别与乐器细节之间切换。</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1302,14 +1323,16 @@
                             <article class="carousel-item">
                                 <div class="card-float">
                                     <div class="card-inner">
-                                        <div class="work-thumb" aria-hidden="true"></div>
+                                        <div class="work-thumb">
+                                            <img src="assets/work-03.jpg" alt="残垣 · 战乱题材电影感影像" loading="lazy" decoding="async">
+                                        </div>
                                         <div class="card-body">
                                             <div class="work-meta">
                                                 <span class="work-index">03</span>
-                                                <span class="work-tag">WebGL</span>
+                                                <span class="work-tag">Cinematic</span>
                                             </div>
-                                            <h3 class="work-title">像素引力</h3>
-                                            <p class="work-desc">让像素在引力场中流动、聚散与重组的尝试。</p>
+                                            <h3 class="work-title">残垣</h3>
+                                            <p class="work-desc">战乱背景下的少年群像。用冷灰废墟与暖色食物做冷暖对撞，压出纪录片式的电影质感。</p>
                                         </div>
                                     </div>
                                 </div>
