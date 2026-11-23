@@ -1,4 +1,3 @@
+*.py
 .workbuddy/
 .tmp_frames/
-crop_works.py
-build_videos.py
