@@ -453,6 +453,17 @@
         object-fit: cover;
         object-position: center;
         transition: transform .65s cubic-bezier(.22, .61, .36, 1);
+
+        /* 锁定图片：禁止原生拖拽、长按菜单与选中 */
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        pointer-events: none;
     }
 
     .carousel-item:hover .work-thumb img { transform: scale(1.045); }
@@ -1288,7 +1299,7 @@
                                 <div class="card-float">
                                     <div class="card-inner">
                                         <div class="work-thumb">
-                                            <img src="assets/work-01.jpg" alt="田园纪事 · 角色设定与分镜画布" loading="lazy" decoding="async">
+                                            <img src="assets/work-01.jpg" alt="田园纪事 · 角色设定与分镜画布" loading="lazy" decoding="async" draggable="false">
                                         </div>
                                         <div class="card-body">
                                             <div class="work-meta">
@@ -1306,7 +1317,7 @@
                                 <div class="card-float">
                                     <div class="card-inner">
                                         <div class="work-thumb">
-                                            <img src="assets/work-02.jpg" alt="琴键之下 · 室内演奏影像画布" loading="lazy" decoding="async">
+                                            <img src="assets/work-02.jpg" alt="琴键之下 · 室内演奏影像画布" loading="lazy" decoding="async" draggable="false">
                                         </div>
                                         <div class="card-body">
                                             <div class="work-meta">
@@ -1324,7 +1335,7 @@
                                 <div class="card-float">
                                     <div class="card-inner">
                                         <div class="work-thumb">
-                                            <img src="assets/work-03.jpg" alt="残垣 · 战乱题材电影感影像" loading="lazy" decoding="async">
+                                            <img src="assets/work-03.jpg" alt="残垣 · 战乱题材电影感影像" loading="lazy" decoding="async" draggable="false">
                                         </div>
                                         <div class="card-body">
                                             <div class="work-meta">
@@ -1978,6 +1989,18 @@
             const items = Array.prototype.slice.call(stage.querySelectorAll('.carousel-item'));
             const n = items.length;
             if (n === 0) return;
+
+            // 锁定图片：拦住浏览器原生拖拽，拖动只走轮播位移
+            ['dragstart', 'drag', 'dragend'].forEach(function (type) {
+                carousel.addEventListener(type, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }, true);
+            });
+
+            // 图片上的长按 / 选中同样禁掉
+            carousel.addEventListener('selectstart', function (e) { e.preventDefault(); });
 
             const AUTO_INTERVAL = 4500;
             const DRAG_THRESHOLD = 6;
