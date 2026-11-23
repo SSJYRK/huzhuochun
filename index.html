@@ -1,0 +1,2561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人作品集</title>
+<style>
+    :root {
+        --text: #f5f7fa;
+        --muted: rgba(245, 247, 250, .62);
+        --font-cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { min-height: 100%; }
+
+    body {
+        background: #000;
+        color: var(--text);
+        font-family: var(--font-cn);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+    }
+
+    body.is-locked { overflow: hidden; }
+
+    @media (hover: hover) and (pointer: fine) {
+        *, *::before, *::after { cursor: none !important; }
+    }
+
+    #starfield {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 0;
+    }
+
+    #cursor-sphere {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10001;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .2s ease;
+        will-change: transform;
+        filter:
+            drop-shadow(0 0 3px rgba(255, 255, 255, .45))
+            drop-shadow(0 0 7px rgba(255, 255, 255, .16));
+    }
+
+    .page {
+        position: relative;
+        z-index: 1;
+        padding: 0 clamp(20px, 5vw, 64px);
+    }
+
+    /* ============ 首页 ============ */
+    .screen-home {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 24px 0;
+        animation: fadeDown .9s .1s both cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: .1em;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .logo .mark {
+        font-size: 18px;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, .9));
+    }
+
+    .nav-links { display: flex; gap: clamp(18px, 3vw, 42px); }
+
+    .nav-links a {
+        position: relative;
+        color: var(--muted);
+        font-size: 14.5px;
+        letter-spacing: .08em;
+        text-decoration: none;
+        transition: color .25s ease;
+    }
+
+    .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -7px;
+        width: 0;
+        height: 1px;
+        background: #fff;
+        transition: width .3s ease;
+    }
+
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 28px;
+        padding: clamp(60px, 12vh, 120px) 0;
+    }
+
+    .hero > * { animation: fadeUp 1s both cubic-bezier(.22, .61, .36, 1); }
+
+    .eyebrow {
+        font-size: 12.5px;
+        letter-spacing: .46em;
+        text-indent: .46em;
+        color: var(--muted);
+        text-transform: uppercase;
+        animation-delay: .25s;
+    }
+
+    .hero-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(10px, 1.4vw, 18px);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: .01em;
+        text-wrap: balance;
+        animation-delay: .38s;
+    }
+
+    .hero-title .line-main {
+        font-size: clamp(34px, 6.2vw, 72px);
+        font-weight: 600;
+        text-shadow: 0 0 46px rgba(255, 255, 255, .22);
+    }
+
+    .hero-title .line-sub {
+        font-size: clamp(20px, 3.4vw, 42px);
+        font-weight: 400;
+        letter-spacing: .06em;
+        color: rgba(245, 247, 250, .78);
+        text-shadow: 0 0 26px rgba(255, 255, 255, .16);
+    }
+
+    .hero-title .accent {
+        position: relative;
+        display: inline-block;
+        color: #fff;
+        text-shadow:
+            0 0 18px rgba(255, 255, 255, .8),
+            0 0 60px rgba(255, 255, 255, .42);
+    }
+
+    .hero-title .accent::after {
+        content: "";
+        position: absolute;
+        left: .04em;
+        right: .04em;
+        bottom: -.12em;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,.9) 18%,
+            rgba(255,255,255,.95) 50%,
+            rgba(255,255,255,.9) 82%,
+            rgba(255,255,255,0) 100%);
+        box-shadow: 0 0 14px rgba(255, 255, 255, .75);
+        opacity: .85;
+    }
+
+    .sub {
+        max-width: 560px;
+        color: var(--muted);
+        font-size: clamp(14px, 1.6vw, 16.5px);
+        line-height: 1.95;
+        letter-spacing: .02em;
+        animation-delay: .5s;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 8px;
+        animation-delay: .62s;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 36px;
+        border-radius: 999px;
+        font-size: 15px;
+        letter-spacing: .08em;
+        text-decoration: none;
+        transition: transform .3s ease, box-shadow .3s ease, background .3s ease, border-color .3s ease;
+    }
+
+    .btn.primary { background: #fff; color: #05060a; font-weight: 600; }
+
+    .btn.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 38px rgba(255, 255, 255, .5);
+    }
+
+    .scroll-guide {
+        position: absolute;
+        left: 50%;
+        bottom: clamp(18px, 3.5vh, 36px);
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 9px;
+        color: rgba(245, 247, 250, .5);
+        font-size: 11px;
+        letter-spacing: .32em;
+        text-indent: .32em;
+        text-decoration: none;
+        z-index: 2;
+        animation: guideIn 1s 1.1s both cubic-bezier(.22, .61, .36, 1);
+        transition: color .3s ease;
+    }
+
+    .scroll-guide:hover { color: #fff; }
+
+    .guide-label { line-height: 1; white-space: nowrap; }
+
+    .guide-arrow {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 50%;
+        animation: guideFloat 2.4s ease-in-out infinite;
+        transition: border-color .3s ease, background .3s ease, box-shadow .3s ease;
+    }
+
+    .scroll-guide:hover .guide-arrow {
+        border-color: rgba(255, 255, 255, .5);
+        background: rgba(255, 255, 255, .06);
+        box-shadow: 0 0 20px rgba(255, 255, 255, .16);
+    }
+
+    .guide-arrow svg { display: block; color: currentColor; }
+
+    @keyframes guideIn {
+        from { opacity: 0; transform: translate(-50%, 12px); }
+        to   { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    @keyframes guideFloat {
+        0%, 100% { transform: translateY(-4px); }
+        50%      { transform: translateY(4px); }
+    }
+
+    /* ============ 作品页 ============ */
+    .screen-works {
+        padding: clamp(90px, 13vh, 150px) 0 clamp(30px, 5vh, 50px);
+    }
+
+    .works-inner { max-width: 1400px; margin: 0 auto; }
+
+    .works-head { text-align: center; }
+    .works-head .eyebrow { animation: none; }
+
+    .works-title {
+        margin-top: 12px;
+        font-size: clamp(30px, 4.5vw, 52px);
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-shadow: 0 0 40px rgba(255, 255, 255, .18);
+    }
+
+    .works-sub {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: clamp(13.5px, 1.4vw, 15.5px);
+        letter-spacing: .02em;
+        line-height: 1.9;
+    }
+
+    .works-group { margin-top: clamp(40px, 6vh, 60px); }
+
+    .group-head {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: clamp(18px, 2.5vh, 26px);
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .group-title {
+        font-size: clamp(17px, 1.8vw, 20px);
+        font-weight: 600;
+        letter-spacing: .06em;
+        color: #fff;
+    }
+
+    .group-count {
+        font-size: 12px;
+        letter-spacing: .16em;
+        color: rgba(255, 255, 255, .38);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* ============ 图片 3D 轮播 ============ */
+    .carousel-3d {
+        position: relative;
+        height: clamp(600px, 92vh, 940px);
+        margin-top: 8px;
+        perspective: 2000px;
+        perspective-origin: 50% 46%;
+        overflow: hidden;
+        outline: none;
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: pan-y;
+    }
+
+    .carousel-3d:focus-visible {
+        outline: 1px dashed rgba(255, 255, 255, .35);
+        outline-offset: 6px;
+        border-radius: 14px;
+    }
+
+    .carousel-stage {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        animation: stageDrift 18s ease-in-out infinite;
+        will-change: transform;
+    }
+
+    @keyframes stageDrift {
+        0%, 100% { transform: translate3d(-12px, 0, 0); }
+        50%      { transform: translate3d(12px, 0, 0); }
+    }
+
+    .carousel-item {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: clamp(300px, 66vw, 880px);
+        transform-style: preserve-3d;
+        opacity: 0;
+        pointer-events: none;
+        overscroll-behavior: contain;
+        transition: opacity .35s ease;
+        will-change: transform, opacity;
+    }
+
+    .card-float {
+        animation: cardFloat 9s ease-in-out infinite;
+        will-change: transform;
+    }
+
+    .carousel-item:nth-child(2) .card-float {
+        animation-duration: 10.4s;
+        animation-delay: -2.6s;
+    }
+    .carousel-item:nth-child(3) .card-float {
+        animation-duration: 8.6s;
+        animation-delay: -5.1s;
+    }
+
+    @keyframes cardFloat {
+        0%, 100% { transform: translateY(-9px); }
+        50%      { transform: translateY(9px); }
+    }
+
+    .card-inner {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: clamp(14px, 1.8vh, 22px);
+        min-height: clamp(420px, 72vh, 760px);
+        padding: clamp(18px, 2.2vw, 32px);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, .13);
+        background: linear-gradient(160deg, rgba(34, 38, 54, .9), rgba(12, 14, 22, .96));
+        box-shadow:
+            0 48px 90px -28px rgba(0, 0, 0, .92),
+            inset 0 1px 0 rgba(255, 255, 255, .08);
+        transform-origin: 50% 58%;
+        transition:
+            transform .5s cubic-bezier(.22, .61, .36, 1),
+            box-shadow .5s ease,
+            border-color .5s ease;
+    }
+
+    .carousel-item:hover .card-inner {
+        transform: scale(1.035);
+        border-color: rgba(255, 255, 255, .4);
+        box-shadow:
+            0 58px 110px -30px rgba(0, 0, 0, .96),
+            0 0 70px rgba(255, 255, 255, .1),
+            inset 0 1px 0 rgba(255, 255, 255, .16);
+    }
+
+    .carousel-3d.is-dragging .carousel-item:hover .card-inner {
+        transform: none;
+        border-color: rgba(255, 255, 255, .13);
+        box-shadow:
+            0 48px 90px -28px rgba(0, 0, 0, .92),
+            inset 0 1px 0 rgba(255, 255, 255, .08);
+    }
+
+    .carousel-item .work-thumb {
+        flex: 1;
+        min-height: clamp(200px, 36vh, 420px);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, .09);
+        transition: border-color .4s ease;
+    }
+
+    .carousel-item:hover .work-thumb { border-color: rgba(255, 255, 255, .24); }
+
+    .carousel-item:nth-child(1) .work-thumb {
+        background:
+            radial-gradient(circle at 32% 38%, rgba(255,255,255,.46), transparent 54%),
+            radial-gradient(circle at 74% 68%, rgba(255,255,255,.17), transparent 50%),
+            rgba(255,255,255,.04);
+    }
+    .carousel-item:nth-child(2) .work-thumb {
+        background:
+            radial-gradient(circle at 68% 28%, rgba(255,255,255,.4), transparent 52%),
+            radial-gradient(circle at 28% 72%, rgba(255,255,255,.15), transparent 46%),
+            rgba(255,255,255,.04);
+    }
+    .carousel-item:nth-child(3) .work-thumb {
+        background:
+            linear-gradient(135deg, rgba(255,255,255,.25), transparent 56%),
+            radial-gradient(circle at 72% 74%, rgba(255,255,255,.2), transparent 52%),
+            rgba(255,255,255,.04);
+    }
+
+    .card-body { display: flex; flex-direction: column; gap: 10px; }
+
+    .card-body .work-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        letter-spacing: .14em;
+        color: rgba(245, 247, 250, .42);
+    }
+
+    .card-body .work-index {
+        font-variant-numeric: tabular-nums;
+        color: rgba(255, 255, 255, .7);
+    }
+
+    .card-body .work-tag {
+        padding: 2px 9px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        border-radius: 999px;
+        font-size: 10.5px;
+        letter-spacing: .1em;
+        color: rgba(255, 255, 255, .55);
+    }
+
+    .card-body .work-title { font-size: clamp(20px, 2vw, 28px); }
+
+    .card-body .work-desc {
+        font-size: clamp(13.5px, 1.15vw, 16px);
+        line-height: 1.85;
+    }
+
+    .carousel-dots {
+        position: absolute;
+        left: 50%;
+        bottom: 6px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 11px;
+        z-index: 500;
+    }
+
+    .carousel-dot {
+        width: 7px;
+        height: 7px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .22);
+        transition: background .3s ease, transform .3s ease, box-shadow .3s ease;
+    }
+
+    .carousel-dot:hover { background: rgba(255, 255, 255, .5); }
+
+    .carousel-dot.is-active {
+        background: #fff;
+        transform: scale(1.4);
+        box-shadow: 0 0 12px rgba(255, 255, 255, .75);
+    }
+
+    .carousel-hint {
+        position: absolute;
+        top: 8px;
+        right: 4px;
+        padding: 5px 11px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .035);
+        color: rgba(255, 255, 255, .42);
+        font-size: 11px;
+        letter-spacing: .1em;
+        white-space: nowrap;
+        pointer-events: none;
+        transition: opacity .6s ease, transform .6s ease;
+        z-index: 500;
+    }
+
+    .carousel-hint.is-gone {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    /* ============ 视频作品：3D 空间画廊 ============ */
+    .video-gallery {
+        position: relative;
+        height: clamp(520px, 74vh, 760px);
+        margin-top: 12px;
+        perspective: 1800px;
+        perspective-origin: 50% 45%;
+        overflow: hidden;
+        touch-action: pan-y;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .gallery-stage {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        will-change: transform;
+    }
+
+    .video-item {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: clamp(260px, 22vw, 320px);
+        transform-style: preserve-3d;
+        will-change: transform, opacity;
+        transition: opacity .3s ease;
+    }
+
+    .video-card {
+        display: flex;
+        flex-direction: column;
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(160deg, rgba(32, 36, 52, .94), rgba(10, 12, 20, .97));
+        border: 1px solid rgba(255, 255, 255, .13);
+        box-shadow:
+            0 30px 60px -20px rgba(0, 0, 0, .92),
+            inset 0 1px 0 rgba(255, 255, 255, .07);
+        transition:
+            transform .35s cubic-bezier(.22, .61, .36, 1),
+            border-color .35s ease,
+            box-shadow .35s ease;
+    }
+
+    .video-item:hover .video-card {
+        transform: scale(1.06);
+        border-color: rgba(255, 255, 255, .42);
+        box-shadow:
+            0 44px 84px -22px rgba(0, 0, 0, .96),
+            0 0 54px rgba(255, 255, 255, .14),
+            inset 0 1px 0 rgba(255, 255, 255, .14);
+    }
+
+    .video-thumb {
+        position: relative;
+        height: clamp(150px, 14vw, 190px);
+        overflow: hidden;
+    }
+
+    .thumb-bg {
+        position: absolute;
+        inset: 0;
+        transition: transform .6s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .video-item:hover .thumb-bg { transform: scale(1.1); }
+
+    .thumb-bg.bg-1 {
+        background:
+            radial-gradient(circle at 30% 32%, rgba(255,255,255,.24), transparent 58%),
+            radial-gradient(circle at 76% 72%, rgba(255,255,255,.1), transparent 52%),
+            linear-gradient(135deg, #1a1a2c 0%, #0a0a14 60%, #14141f 100%);
+    }
+
+    .thumb-bg.bg-2 {
+        background:
+            radial-gradient(circle at 68% 28%, rgba(255,255,255,.22), transparent 56%),
+            radial-gradient(circle at 24% 74%, rgba(255,255,255,.1), transparent 50%),
+            linear-gradient(135deg, #20162a 0%, #0d0a14 60%, #1a1024 100%);
+    }
+
+    .thumb-bg.bg-3 {
+        background:
+            radial-gradient(circle at 50% 70%, rgba(255,255,255,.22), transparent 58%),
+            radial-gradient(circle at 26% 26%, rgba(255,255,255,.1), transparent 50%),
+            linear-gradient(135deg, #101a24 0%, #080c12 60%, #14202c 100%);
+    }
+
+    .play-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 52px;
+        height: 52px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: rgba(0, 0, 0, .42);
+        border: 1px solid rgba(255, 255, 255, .5);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        transition:
+            background .3s ease,
+            border-color .3s ease,
+            transform .35s cubic-bezier(.22, .61, .36, 1);
+        z-index: 2;
+    }
+
+    .play-btn::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        transform: translate(-38%, -50%);
+        border-style: solid;
+        border-width: 10px 0 10px 16px;
+        border-color: transparent transparent transparent rgba(255, 255, 255, .92);
+        transition: border-left-color .3s ease;
+    }
+
+    .video-item:hover .play-btn {
+        background: rgba(255, 255, 255, .94);
+        border-color: #fff;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .video-item:hover .play-btn::after {
+        border-left-color: #05060a;
+    }
+
+    .duration {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, .6);
+        color: rgba(255, 255, 255, .85);
+        font-size: 11px;
+        letter-spacing: .05em;
+        font-variant-numeric: tabular-nums;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .video-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 14px 16px 18px;
+    }
+
+    .video-title {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        color: #fff;
+    }
+
+    .video-desc {
+        font-size: 12.5px;
+        line-height: 1.72;
+        color: rgba(245, 247, 250, .6);
+    }
+
+    .video-tag {
+        align-self: flex-start;
+        margin-top: 4px;
+        padding: 3px 9px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        border-radius: 999px;
+        font-size: 10.5px;
+        letter-spacing: .08em;
+        color: rgba(255, 255, 255, .55);
+    }
+
+    /* ============ 关于页 ============ */
+    .screen-about {
+        padding: clamp(90px, 13vh, 150px) 0 clamp(30px, 5vh, 50px);
+    }
+
+    .about-inner { max-width: 1100px; margin: 0 auto; }
+
+    .about-head { text-align: center; }
+    .about-head .eyebrow { animation: none; }
+
+    .about-title {
+        margin-top: 12px;
+        font-size: clamp(30px, 4.5vw, 52px);
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-shadow: 0 0 40px rgba(255, 255, 255, .18);
+    }
+
+    .about-sub {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: clamp(13.5px, 1.4vw, 15.5px);
+        letter-spacing: .02em;
+        line-height: 1.9;
+    }
+
+    .about-intro {
+        margin-top: clamp(36px, 6vh, 56px);
+        padding: clamp(24px, 3vw, 40px);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        background: linear-gradient(160deg, rgba(28, 32, 46, .82), rgba(10, 12, 20, .92));
+        box-shadow:
+            0 40px 80px -30px rgba(0, 0, 0, .9),
+            inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+
+    .about-intro p {
+        font-size: clamp(14px, 1.5vw, 17px);
+        line-height: 2;
+        color: rgba(245, 247, 250, .72);
+        letter-spacing: .02em;
+    }
+
+    .about-intro p + p { margin-top: 1em; }
+
+    .about-intro .accent {
+        color: #fff;
+        text-shadow: 0 0 20px rgba(255, 255, 255, .5);
+    }
+
+    .about-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 24px;
+    }
+
+    .stat {
+        padding: 22px 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        background: rgba(255, 255, 255, .03);
+        text-align: center;
+    }
+
+    .stat-num {
+        display: block;
+        font-size: clamp(28px, 4vw, 42px);
+        font-weight: 600;
+        letter-spacing: .02em;
+        color: #fff;
+        text-shadow: 0 0 30px rgba(255, 255, 255, .3);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+        display: block;
+        margin-top: 6px;
+        font-size: 12px;
+        letter-spacing: .16em;
+        color: rgba(255, 255, 255, .42);
+        text-transform: uppercase;
+    }
+
+    .about-section-title {
+        margin-top: clamp(40px, 6vh, 60px);
+        font-size: clamp(18px, 2vw, 22px);
+        font-weight: 600;
+        letter-spacing: .06em;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .about-section-title::before {
+        content: "";
+        width: 22px;
+        height: 1px;
+        background: rgba(255, 255, 255, .4);
+    }
+
+    .skill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .skill-tag {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        background: rgba(255, 255, 255, .03);
+        color: rgba(245, 247, 250, .7);
+        font-size: 13px;
+        letter-spacing: .06em;
+        transition: color .3s ease, border-color .3s ease, box-shadow .3s ease;
+    }
+
+    .skill-tag:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, .4);
+        box-shadow: 0 0 24px rgba(255, 255, 255, .12);
+    }
+
+    .timeline {
+        margin-top: 18px;
+        border-left: 1px solid rgba(255, 255, 255, .12);
+        padding-left: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+    }
+
+    .timeline-item {
+        position: relative;
+        opacity: 0;
+        transform: translateY(22px);
+        transition:
+            opacity .8s cubic-bezier(.22, .61, .36, 1),
+            transform .8s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .timeline-item.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -29px;
+        top: 6px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 12px rgba(255, 255, 255, .8);
+        transform: scale(0);
+        transition: transform .5s cubic-bezier(.22, .61, .36, 1) .1s;
+    }
+
+    .timeline-item.is-visible::before { transform: scale(1); }
+
+    .timeline-title,
+    .timeline-meta,
+    .timeline-desc {
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+            opacity .7s ease,
+            transform .7s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .timeline-item.is-visible .timeline-title {
+        opacity: 1;
+        transform: none;
+        transition-delay: .12s;
+    }
+
+    .timeline-item.is-visible .timeline-meta {
+        opacity: 1;
+        transform: none;
+        transition-delay: .24s;
+    }
+
+    .timeline-item.is-visible .timeline-desc {
+        opacity: 1;
+        transform: none;
+        transition-delay: .36s;
+    }
+
+    .timeline-title {
+        margin-top: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .timeline-meta {
+        display: block;
+        margin-top: 6px;
+        font-size: 11.5px;
+        letter-spacing: .16em;
+        color: rgba(255, 255, 255, .4);
+    }
+
+    .timeline-desc {
+        position: relative;
+        margin-top: 8px;
+        padding-left: 18px;
+        font-size: 13.5px;
+        line-height: 1.8;
+        color: rgba(245, 247, 250, .55);
+    }
+
+    .timeline-desc::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: .4em;
+        bottom: .4em;
+        width: 1px;
+        background: linear-gradient(180deg,
+            rgba(255, 255, 255, .55) 0%,
+            rgba(255, 255, 255, .12) 70%,
+            rgba(255, 255, 255, 0) 100%);
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform .9s cubic-bezier(.22, .61, .36, 1) .5s;
+    }
+
+    .timeline-item.is-visible .timeline-desc::before { transform: scaleY(1); }
+
+    .timeline-desc .lead {
+        color: inherit;
+        font-weight: inherit;
+        text-shadow: none;
+        letter-spacing: inherit;
+    }
+
+    .contact-block {
+        margin-top: clamp(40px, 6vh, 60px);
+        padding: clamp(24px, 3vw, 40px);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        background: linear-gradient(160deg, rgba(24, 28, 42, .85), rgba(10, 12, 20, .94));
+        text-align: center;
+    }
+
+    .contact-title {
+        font-size: clamp(20px, 2.4vw, 28px);
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: .04em;
+    }
+
+    .contact-desc {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .contact-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        background: rgba(255, 255, 255, .04);
+        color: rgba(255, 255, 255, .7);
+        font-size: 13.5px;
+        letter-spacing: .08em;
+        text-decoration: none;
+        transition: color .3s ease, border-color .3s ease, background .3s ease, box-shadow .3s ease;
+    }
+
+    .contact-link:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, .4);
+        background: rgba(255, 255, 255, .08);
+        box-shadow: 0 0 28px rgba(255, 255, 255, .16);
+    }
+
+    /* ============ 视频 Lightbox ============ */
+    .video-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(16px, 3vw, 40px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .35s ease, visibility .35s ease;
+    }
+
+    .video-lightbox.is-open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .lightbox-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, .88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .lightbox-panel {
+        position: relative;
+        width: min(960px, 94vw);
+        max-height: 88vh;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #0a0a12;
+        border: 1px solid rgba(255, 255, 255, .13);
+        box-shadow: 0 40px 100px -20px rgba(0, 0, 0, .96);
+        transform: translateY(22px) scale(.96);
+        transition: transform .35s cubic-bezier(.22, .61, .36, 1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .video-lightbox.is-open .lightbox-panel { transform: none; }
+
+    .lightbox-panel video {
+        display: block;
+        width: 100%;
+        max-height: 76vh;
+        background: #000;
+        object-fit: contain;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, .22);
+        background: rgba(0, 0, 0, .55);
+        color: #fff;
+        font-size: 21px;
+        line-height: 1;
+        display: grid;
+        place-items: center;
+        z-index: 3;
+        transition: background .25s ease, border-color .25s ease, transform .25s ease;
+    }
+
+    .lightbox-close:hover {
+        background: rgba(255, 255, 255, .16);
+        border-color: rgba(255, 255, 255, .55);
+        transform: rotate(90deg);
+    }
+
+    .lightbox-close:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, .8);
+        outline-offset: 2px;
+    }
+
+    .lightbox-caption {
+        padding: 14px 18px 16px;
+        color: rgba(255, 255, 255, .68);
+        font-size: 13px;
+        letter-spacing: .05em;
+        border-top: 1px solid rgba(255, 255, 255, .08);
+        min-height: 46px;
+    }
+
+    /* ============ 底页 ============ */
+    .foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: clamp(24px, 4vh, 48px);
+        padding: 26px 0 32px;
+        border-top: 1px solid rgba(255, 255, 255, .08);
+        color: rgba(255, 255, 255, .4);
+        font-size: 12.5px;
+        letter-spacing: .1em;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: none; }
+    }
+    @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-16px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 900px) {
+        .carousel-item { width: min(82vw, 560px); }
+    }
+
+    @media (max-width: 760px) {
+        .nav-links { display: none; }
+        .hero { gap: 22px; }
+        .hero-title .line-sub { letter-spacing: .04em; }
+        .btn { padding: 14px 28px; font-size: 14px; }
+
+        .scroll-guide {
+            bottom: 14px;
+            font-size: 10px;
+            letter-spacing: .26em;
+            text-indent: .26em;
+            gap: 7px;
+        }
+        .guide-arrow { width: 26px; height: 26px; }
+
+        .carousel-3d { height: 78vh; height: 78dvh; }
+        .carousel-item { width: min(88vw, 480px); }
+        .card-inner { min-height: 58vh; padding: 16px; }
+        .carousel-item .work-thumb { min-height: 30vh; }
+        .carousel-hint { font-size: 10px; padding: 4px 9px; }
+
+        .video-gallery { height: 62vh; height: 62dvh; }
+        .video-item { width: min(68vw, 280px); }
+        .video-thumb { height: 140px; }
+
+        .about-stats { grid-template-columns: 1fr; }
+        .timeline { padding-left: 18px; }
+        .timeline-item::before { left: -23px; }
+
+        .lightbox-close { top: 8px; right: 8px; width: 34px; height: 34px; font-size: 18px; }
+        .lightbox-caption { font-size: 12px; padding: 12px 14px 14px; }
+
+        .foot {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+            font-size: 11.5px;
+            letter-spacing: .06em;
+            padding: 22px 0 28px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .nav, .hero > * { animation: none; }
+        .scroll-guide { animation: none; opacity: 1; }
+        .guide-arrow { animation: none; }
+        .carousel-stage, .card-float { animation: none; }
+        .carousel-item, .card-inner { transition: none; }
+        .video-item, .video-card, .thumb-bg, .play-btn { transition: none; }
+        .skill-tag, .contact-link { transition: none; }
+        .timeline-item,
+        .timeline-item::before,
+        .timeline-item .timeline-title,
+        .timeline-item .timeline-meta,
+        .timeline-item .timeline-desc,
+        .timeline-desc::before {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+        html { scroll-behavior: auto; }
+    }
+</style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+    <canvas id="cursor-sphere"></canvas>
+
+    <div class="page">
+
+        <!-- ==================== 首页 ==================== -->
+        <section class="screen-home" id="top">
+            <header class="nav">
+                <a href="#top" class="logo">
+                    <span class="mark">✦</span>
+                    <span>作品集</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="#top">首页</a>
+                    <a href="#works">作品</a>
+                    <a href="#about">关于</a>
+                </nav>
+            </header>
+
+            <main class="hero">
+                <p class="eyebrow">Pioneer</p>
+                <h1 class="hero-title">
+                    <span class="line-main">一个有<span class="accent">开拓精神</span></span>
+                    <span class="line-sub">时刻探索新想法的人</span>
+                </h1>
+                <p class="sub">所谓开拓，就是沿着前人未尽的道路，走出更遥远的距离</p>
+                <div class="actions">
+                    <a href="#works" id="explore-btn" class="btn primary">开始探索</a>
+                </div>
+            </main>
+
+            <a href="#works" class="scroll-guide" aria-label="下滑查看作品">
+                <span class="guide-label">SCROLL</span>
+                <span class="guide-arrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 4v15"/>
+                        <path d="M6 13l6 6 6-6"/>
+                    </svg>
+                </span>
+            </a>
+        </section>
+
+        <!-- ==================== 作品页 ==================== -->
+        <section class="screen-works" id="works">
+            <div class="works-inner">
+                <div class="works-head">
+                    <p class="eyebrow">Selected Works</p>
+                    <h2 class="works-title">作品</h2>
+                    <p class="works-sub">图片与影像，关于探索、创造与实验的记录</p>
+                </div>
+
+                <!-- 图片作品 -->
+                <div class="works-group">
+                    <div class="group-head">
+                        <h3 class="group-title">图片作品</h3>
+                        <span class="group-count">03</span>
+                    </div>
+
+                    <div class="carousel-3d" id="img-carousel"
+                         role="region" aria-roledescription="carousel" aria-label="图片作品轮播">
+                        <div class="carousel-stage" id="img-stage">
+
+                            <article class="carousel-item">
+                                <div class="card-float">
+                                    <div class="card-inner">
+                                        <div class="work-thumb" aria-hidden="true"></div>
+                                        <div class="card-body">
+                                            <div class="work-meta">
+                                                <span class="work-index">01</span>
+                                                <span class="work-tag">Canvas</span>
+                                            </div>
+                                            <h3 class="work-title">星轨可视化</h3>
+                                            <p class="work-desc">用粒子与光线描绘恒星运动轨迹的交互实验。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="carousel-item">
+                                <div class="card-float">
+                                    <div class="card-inner">
+                                        <div class="work-thumb" aria-hidden="true"></div>
+                                        <div class="card-body">
+                                            <div class="work-meta">
+                                                <span class="work-index">02</span>
+                                                <span class="work-tag">Interaction</span>
+                                            </div>
+                                            <h3 class="work-title">深空导航</h3>
+                                            <p class="work-desc">以视差与景深构建的沉浸式浏览体验。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="carousel-item">
+                                <div class="card-float">
+                                    <div class="card-inner">
+                                        <div class="work-thumb" aria-hidden="true"></div>
+                                        <div class="card-body">
+                                            <div class="work-meta">
+                                                <span class="work-index">03</span>
+                                                <span class="work-tag">WebGL</span>
+                                            </div>
+                                            <h3 class="work-title">像素引力</h3>
+                                            <p class="work-desc">让像素在引力场中流动、聚散与重组的尝试。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                        </div>
+
+                        <div class="carousel-dots" id="img-dots"></div>
+                        <div class="carousel-hint" id="img-hint">空闲自动轮播 · 按住左键左右拖动</div>
+                    </div>
+                </div>
+
+                <!-- 视频作品：3D 空间画廊 -->
+                <div class="works-group">
+                    <div class="group-head">
+                        <h3 class="group-title">视频作品</h3>
+                        <span class="group-count">03</span>
+                    </div>
+
+                    <div class="video-gallery" id="video-gallery" aria-label="视频作品画廊">
+                        <div class="gallery-stage" id="gallery-stage">
+
+                            <article class="video-item" tabindex="0" role="button"
+                                     data-video="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+                                     data-title="光年之外 · 视觉概念短片">
+                                <div class="video-card">
+                                    <div class="video-thumb">
+                                        <div class="thumb-bg bg-1"></div>
+                                        <span class="play-btn"></span>
+                                        <span class="duration">01:24</span>
+                                    </div>
+                                    <div class="video-info">
+                                        <h3 class="video-title">光年之外</h3>
+                                        <p class="video-desc">关于遥远星系与未知边界的视觉概念短片。</p>
+                                        <span class="video-tag">Motion</span>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="video-item" tabindex="0" role="button"
+                                     data-video="https://www.w3schools.com/html/mov_bbb.mp4"
+                                     data-title="引力波场 · 循环影像">
+                                <div class="video-card">
+                                    <div class="video-thumb">
+                                        <div class="thumb-bg bg-2"></div>
+                                        <span class="play-btn"></span>
+                                        <span class="duration">00:48</span>
+                                    </div>
+                                    <div class="video-info">
+                                        <h3 class="video-title">引力波场</h3>
+                                        <p class="video-desc">以动态噪点与波纹模拟引力场扰动的循环影像。</p>
+                                        <span class="video-tag">Loop</span>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="video-item" tabindex="0" role="button"
+                                     data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                                     data-title="视差之旅 · 沉浸式旅程">
+                                <div class="video-card">
+                                    <div class="video-thumb">
+                                        <div class="thumb-bg bg-3"></div>
+                                        <span class="play-btn"></span>
+                                        <span class="duration">02:12</span>
+                                    </div>
+                                    <div class="video-info">
+                                        <h3 class="video-title">视差之旅</h3>
+                                        <p class="video-desc">跟随镜头穿越星际尘埃的沉浸式旅程。</p>
+                                        <span class="video-tag">Short Film</span>
+                                    </div>
+                                </div>
+                            </article>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 关于页 ==================== -->
+        <section class="screen-about" id="about">
+            <div class="about-inner">
+                <div class="about-head">
+                    <p class="eyebrow">About</p>
+                    <h2 class="about-title">关于</h2>
+                    <p class="about-sub">一个持续探索的 AI 内容创作者，和他的方法、经历与作品</p>
+                </div>
+
+                <div class="about-intro">
+                    <p>你好，我是一名<span class="accent">AI 内容创作者</span>。我相信好的内容来自对工具边界的不断试探，以及把想法快速落成作品的执行力。</p>
+                    <p>我熟练掌握市面上主流的 AI 创作工具，从图像生成、视频生成到配音与后期，能够独立完成一条内容从创意、提示词、反复生成到最终成片的完整链路。这个作品集里的每一个实验，都是我对"开拓"的一次练习：沿着前人未尽的道路，走出更遥远的距离。</p>
+
+                    <div class="about-stats">
+                        <div class="stat">
+                            <span class="stat-num">15+</span>
+                            <span class="stat-label">Works</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-num">10+</span>
+                            <span class="stat-label">Tools</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="about-section-title">技能</h3>
+                <div class="skill-list">
+                    <span class="skill-tag">Midjourney</span>
+                    <span class="skill-tag">Stable Diffusion</span>
+                    <span class="skill-tag">ComfyUI</span>
+                    <span class="skill-tag">Runway</span>
+                    <span class="skill-tag">可灵 Kling</span>
+                    <span class="skill-tag">即梦 Dreamina</span>
+                    <span class="skill-tag">Sora</span>
+                    <span class="skill-tag">ChatGPT / Claude</span>
+                    <span class="skill-tag">提示词工程</span>
+                    <span class="skill-tag">AI 影像工作流</span>
+                </div>
+
+                <h3 class="about-section-title">经历</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4 class="timeline-title">AI 内容创作者</h4>
+                        <span class="timeline-meta">提示词工程 · 工作流搭建 · 生成实验</span>
+                        <p class="timeline-desc"><span class="lead">持续产出</span> AI 影像与生成式内容实验，沉淀可复用的提示词库与生产工作流。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="timeline-title">AI 内容策划 / 制作</h4>
+                        <span class="timeline-meta">创意策划 · 内容生成 · 成片交付</span>
+                        <p class="timeline-desc"><span class="lead">负责 AI</span> 短片、商业视觉与社媒内容的创意策划、生成与成片交付。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="timeline-title">新媒体 · 转向 AI 创作</h4>
+                        <span class="timeline-meta">新媒体运营 · 流程转型 · 资产沉淀</span>
+                        <p class="timeline-desc"><span class="lead">从新媒体</span>转向 AI 驱动的内容生产，搭建个人提示词体系与素材资产。</p>
+                    </div>
+                </div>
+
+                <div class="contact-block">
+                    <h3 class="contact-title">感谢浏览</h3>
+                    <p class="contact-desc">沿着前人未尽的道路，勇往直前。</p>
+                    <div class="contact-links">
+                        <a class="contact-link" href="#top">回到顶部 ↑</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 底页 ==================== -->
+        <footer class="foot">
+            <span>© 2026 作品集 · ALL RIGHTS RESERVED</span>
+            <span>MADE WITH CANVAS · JS</span>
+        </footer>
+
+    </div>
+
+    <!-- ==================== 视频 Lightbox ==================== -->
+    <div class="video-lightbox" id="video-lightbox" aria-hidden="true">
+        <div class="lightbox-backdrop" data-close></div>
+        <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="视频播放">
+            <button type="button" class="lightbox-close" data-close aria-label="关闭">×</button>
+            <video id="lightbox-video" controls playsinline preload="metadata"></video>
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <!-- ==================== 星空 / 光标 / 拖尾 ==================== -->
+    <script>
+        (function () {
+            const canvas = document.getElementById('starfield');
+            const ctx = canvas.getContext('2d');
+
+            let width, height;
+            let stars = [];
+            let mouse = { x: 0, y: 0 };
+            let targetMouse = { x: 0, y: 0 };
+
+            const CONFIG = {
+                starCount: 1200,
+                layers: 3,
+                maxStarSize: 1.8,
+                parallaxStrength: 0.02,
+                twinkleSpeed: 0.002,
+                driftSpeed: 0.05
+            };
+
+            const sphereCanvas = document.getElementById('cursor-sphere');
+            const actx = sphereCanvas.getContext('2d');
+            const SPHERE_SIZE = 24;
+
+            let sphereDpr = Math.min(window.devicePixelRatio || 1, 2);
+            const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            function setupSphereCanvas() {
+                sphereDpr = Math.min(window.devicePixelRatio || 1, 2);
+                sphereCanvas.width = SPHERE_SIZE * sphereDpr;
+                sphereCanvas.height = SPHERE_SIZE * sphereDpr;
+                sphereCanvas.style.width = SPHERE_SIZE + 'px';
+                sphereCanvas.style.height = SPHERE_SIZE + 'px';
+                actx.setTransform(sphereDpr, 0, 0, sphereDpr, 0, 0);
+            }
+
+            let sphereAngle = 0;
+            let sphereScale = 1;
+            let sphereClickScale = 1;
+
+            const sphereBands = [
+                { ry: 0.28, rot: 0.35,  color: 'rgba(255,255,255,0.14)', w: 0.09 },
+                { ry: 0.45, rot: -0.50, color: 'rgba(0,0,0,0.14)',       w: 0.07 },
+                { ry: 0.62, rot: 0.15,  color: 'rgba(255,255,255,0.10)', w: 0.06 }
+            ];
+
+            function drawSphere() {
+                const s = SPHERE_SIZE;
+                const c = s / 2;
+                const R = s * 0.26;
+
+                actx.clearRect(0, 0, s, s);
+                actx.save();
+                actx.translate(c, c);
+                actx.scale(sphereScale, sphereScale);
+
+                const glow = actx.createRadialGradient(0, 0, R * 0.65, 0, 0, R * 1.55);
+                glow.addColorStop(0, 'rgba(255,255,255,0.16)');
+                glow.addColorStop(1, 'rgba(255,255,255,0)');
+                actx.beginPath();
+                actx.arc(0, 0, R * 1.55, 0, Math.PI * 2);
+                actx.fillStyle = glow;
+                actx.fill();
+
+                const body = actx.createRadialGradient(
+                    -R * 0.38, -R * 0.42, R * 0.05,
+                    0, 0, R * 1.15
+                );
+                body.addColorStop(0,    '#ffffff');
+                body.addColorStop(0.25, '#e8e8e8');
+                body.addColorStop(0.55, '#a8a8a8');
+                body.addColorStop(0.80, '#6a6a6a');
+                body.addColorStop(1,    '#3a3a3a');
+
+                actx.beginPath();
+                actx.arc(0, 0, R, 0, Math.PI * 2);
+                actx.fillStyle = body;
+                actx.fill();
+
+                actx.save();
+                actx.beginPath();
+                actx.arc(0, 0, R, 0, Math.PI * 2);
+                actx.clip();
+                actx.rotate(sphereAngle);
+
+                sphereBands.forEach(b => {
+                    actx.beginPath();
+                    actx.ellipse(0, 0, R * 0.92, R * b.ry, b.rot, 0, Math.PI * 2);
+                    actx.strokeStyle = b.color;
+                    actx.lineWidth = R * b.w;
+                    actx.stroke();
+                });
+
+                actx.restore();
+
+                actx.beginPath();
+                actx.ellipse(-R * 0.34, -R * 0.36, R * 0.24, R * 0.17, -0.55, 0, Math.PI * 2);
+                actx.fillStyle = 'rgba(255,255,255,0.90)';
+                actx.fill();
+
+                actx.beginPath();
+                actx.ellipse(-R * 0.30, -R * 0.32, R * 0.10, R * 0.07, -0.55, 0, Math.PI * 2);
+                actx.fillStyle = 'rgba(255,255,255,1)';
+                actx.fill();
+
+                actx.beginPath();
+                actx.arc(0, 0, R, 0, Math.PI * 2);
+                actx.strokeStyle = 'rgba(255,255,255,0.35)';
+                actx.lineWidth = 0.8;
+                actx.stroke();
+
+                actx.restore();
+            }
+
+            let cursorVisible = false;
+
+            function moveSphere(x, y) {
+                sphereCanvas.style.transform = `translate3d(${x - SPHERE_SIZE / 2}px, ${y - SPHERE_SIZE / 2}px, 0)`;
+                if (!cursorVisible) {
+                    sphereCanvas.style.opacity = '1';
+                    cursorVisible = true;
+                }
+            }
+
+            function hideSphere() {
+                sphereCanvas.style.opacity = '0';
+                cursorVisible = false;
+            }
+
+            const trailAnchors = [];
+            const TRAIL_LIFE = 0.62;
+            const TRAIL_MAX_ANCHORS = 150;
+            const TRAIL_MIN_STEP = 2.5;
+            const TRAIL_MAX_SUBSTEPS = 24;
+            const TRAIL_RESET_DIST = 240;
+
+            let pointerX = 0, pointerY = 0;
+            let pointerActive = false;
+            let hasLastSample = false;
+            let lastSampleX = 0, lastSampleY = 0;
+
+            function pushAnchor(x, y) {
+                trailAnchors.push({
+                    x, y,
+                    age: 0,
+                    seed: Math.random() * Math.PI * 2,
+                    swayAngle: Math.random() * Math.PI * 2
+                });
+            }
+
+            function updateTrail(dt) {
+                for (let i = 0; i < trailAnchors.length; i++) trailAnchors[i].age += dt;
+                while (trailAnchors.length && trailAnchors[0].age >= TRAIL_LIFE) trailAnchors.shift();
+                while (trailAnchors.length > TRAIL_MAX_ANCHORS) trailAnchors.shift();
+
+                if (!pointerActive) return;
+
+                if (!hasLastSample) {
+                    lastSampleX = pointerX;
+                    lastSampleY = pointerY;
+                    hasLastSample = true;
+                    pushAnchor(pointerX, pointerY);
+                    return;
+                }
+
+                const dx = pointerX - lastSampleX;
+                const dy = pointerY - lastSampleY;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist > TRAIL_RESET_DIST) {
+                    trailAnchors.length = 0;
+                    lastSampleX = pointerX;
+                    lastSampleY = pointerY;
+                    pushAnchor(pointerX, pointerY);
+                    return;
+                }
+
+                if (dist < TRAIL_MIN_STEP) return;
+
+                const steps = Math.min(Math.ceil(dist / TRAIL_MIN_STEP), TRAIL_MAX_SUBSTEPS);
+                for (let i = 1; i <= steps; i++) {
+                    const t = i / steps;
+                    pushAnchor(lastSampleX + dx * t, lastSampleY + dy * t);
+                }
+                lastSampleX = pointerX;
+                lastSampleY = pointerY;
+            }
+
+            const FLAME_LAYERS = [
+                { width: 13.0, alpha: 0.055, widthPow: 1.25, alphaPow: 1.5 },
+                { width: 6.0,  alpha: 0.14,  widthPow: 1.2,  alphaPow: 1.45 },
+                { width: 1.9,  alpha: 0.92,  widthPow: 1.15, alphaPow: 1.35 }
+            ];
+
+            function drawTrail(elapsed) {
+                if (!pointerActive) return;
+
+                const pts = [{ x: pointerX, y: pointerY, freshness: 1, seed: 0, swayAngle: 0 }];
+
+                for (let i = trailAnchors.length - 1; i >= 0; i--) {
+                    const a = trailAnchors[i];
+                    const f = 1 - a.age / TRAIL_LIFE;
+                    if (f <= 0) continue;
+                    pts.push({ x: a.x, y: a.y, freshness: f, seed: a.seed, swayAngle: a.swayAngle });
+                }
+
+                if (pts.length < 2) return;
+
+                for (let i = 1; i < pts.length; i++) {
+                    const p = pts[i];
+                    const swayAmp = (1 - p.freshness) * (1 - p.freshness) * 2.4;
+                    const sway = Math.sin(elapsed * 0.004 + p.seed) * swayAmp;
+                    p.drawX = p.x + Math.cos(p.swayAngle) * sway;
+                    p.drawY = p.y + Math.sin(p.swayAngle) * sway;
+                }
+                pts[0].drawX = pointerX;
+                pts[0].drawY = pointerY;
+
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                for (let layerIdx = 0; layerIdx < FLAME_LAYERS.length; layerIdx++) {
+                    const layer = FLAME_LAYERS[layerIdx];
+                    for (let i = 1; i < pts.length; i++) {
+                        const p0 = pts[i - 1];
+                        const p1 = pts[i];
+                        const f = (p0.freshness + p1.freshness) * 0.5;
+                        if (f <= 0) continue;
+                        const alpha = Math.pow(f, layer.alphaPow) * layer.alpha;
+                        const lw = 0.15 + Math.pow(f, layer.widthPow) * layer.width;
+
+                        ctx.beginPath();
+                        ctx.moveTo(p0.drawX, p0.drawY);
+                        ctx.lineTo(p1.drawX, p1.drawY);
+                        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+                        ctx.lineWidth = lw;
+                        ctx.stroke();
+                    }
+                }
+                ctx.restore();
+            }
+
+            const ripples = [];
+
+            function addRipple(x, y) {
+                const base = Math.max(width, height);
+                ripples.push({ x, y, age: 0, life: 0.8, maxRadius: base * 0.06 + 24 });
+                ripples.push({ x, y, age: -0.1, life: 1.0, maxRadius: base * 0.11 + 50 });
+            }
+
+            function updateRipples(dt) {
+                for (let i = ripples.length - 1; i >= 0; i--) {
+                    const r = ripples[i];
+                    r.age += dt;
+                    if (r.age >= r.life) ripples.splice(i, 1);
+                }
+            }
+
+            function drawRipples() {
+                if (ripples.length === 0) return;
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                for (let i = 0; i < ripples.length; i++) {
+                    const r = ripples[i];
+                    if (r.age < 0) continue;
+                    const t = Math.min(r.age / r.life, 1);
+                    const ease = 1 - Math.pow(1 - t, 3);
+                    const radius = ease * r.maxRadius;
+                    const alpha = (1 - t) * 0.8;
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+                    ctx.lineWidth = 2.0 * (1 - t) + 0.4;
+                    ctx.shadowColor = 'rgba(255,255,255,0.9)';
+                    ctx.shadowBlur = 12 * (1 - t);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            class Star {
+                constructor() { this.reset(true); }
+
+                reset(initial = false) {
+                    this.layer = Math.floor(Math.random() * CONFIG.layers) + 1;
+                    const layerFactor = this.layer / CONFIG.layers;
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.radius = random(0.2, 1) * CONFIG.maxStarSize * layerFactor + 0.2;
+                    this.baseAlpha = random(0.3, 0.9) * layerFactor + 0.1;
+                    this.twinklePhase = random(0, Math.PI * 2);
+                    this.twinkleSpeed = CONFIG.twinkleSpeed * random(0.5, 1.5);
+                    this.color = '255, 255, 255';
+                    this.currentAlpha = this.baseAlpha;
+                    this.driftX = random(-1, 1) * CONFIG.driftSpeed * layerFactor;
+                    this.driftY = random(-1, 1) * CONFIG.driftSpeed * layerFactor;
+                    if (initial) {
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                    }
+                }
+
+                update(time) {
+                    this.x += this.driftX;
+                    this.y += this.driftY;
+                    if (this.x < -10) this.x = width + 10;
+                    if (this.x > width + 10) this.x = -10;
+                    if (this.y < -10) this.y = height + 10;
+                    if (this.y > height + 10) this.y = -10;
+                    this.currentAlpha = this.baseAlpha * (0.6 + 0.4 * Math.sin(time * this.twinkleSpeed + this.twinklePhase));
+                }
+
+                draw() {
+                    const parallaxFactor = (this.layer / CONFIG.layers) * CONFIG.parallaxStrength;
+                    const offsetX = (mouse.x - width / 2) * parallaxFactor;
+                    const offsetY = (mouse.y - height / 2) * parallaxFactor;
+                    const drawX = this.x + offsetX;
+                    const drawY = this.y + offsetY;
+
+                    ctx.beginPath();
+                    ctx.arc(drawX, drawY, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${this.color}, ${this.currentAlpha})`;
+                    ctx.fill();
+
+                    if (this.radius > 1.2) {
+                        ctx.beginPath();
+                        ctx.arc(drawX, drawY, this.radius * 2.5, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${this.color}, ${this.currentAlpha * 0.15})`;
+                        ctx.fill();
+                    }
+                }
+            }
+
+            function resize() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                width = window.innerWidth;
+                height = window.innerHeight;
+
+                canvas.width = Math.round(width * dpr);
+                canvas.height = Math.round(height * dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                const area = width * height;
+                const adjustedCount = Math.floor(800 * (area / (1920 * 1080)));
+                CONFIG.starCount = Math.max(400, Math.min(2000, adjustedCount));
+
+                stars = [];
+                for (let i = 0; i < CONFIG.starCount; i++) stars.push(new Star());
+
+                mouse.x = targetMouse.x = width / 2;
+                mouse.y = targetMouse.y = height / 2;
+
+                setupSphereCanvas();
+            }
+
+            function onMouseMove(e) {
+                targetMouse.x = e.clientX;
+                targetMouse.y = e.clientY;
+                pointerX = e.clientX;
+                pointerY = e.clientY;
+                pointerActive = true;
+                if (finePointer) moveSphere(pointerX, pointerY);
+            }
+
+            function onTouchMove(e) {
+                if (e.touches.length > 0) {
+                    const t = e.touches[0];
+                    targetMouse.x = t.clientX;
+                    targetMouse.y = t.clientY;
+                    pointerX = t.clientX;
+                    pointerY = t.clientY;
+                    pointerActive = true;
+                }
+            }
+
+            function onTouchEnd() {
+                pointerActive = false;
+                hasLastSample = false;
+                trailAnchors.length = 0;
+            }
+
+            function onPointerDown(e) {
+                addRipple(e.clientX, e.clientY);
+                if (finePointer) sphereClickScale = 1.35;
+            }
+
+            function onMouseLeave() {
+                pointerActive = false;
+                hasLastSample = false;
+                trailAnchors.length = 0;
+                hideSphere();
+            }
+
+            const exploreBtn = document.getElementById('explore-btn');
+            const worksSection = document.getElementById('works');
+
+            if (exploreBtn && worksSection) {
+                exploreBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    worksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+
+            const scrollGuide = document.querySelector('.scroll-guide');
+            if (scrollGuide && worksSection) {
+                scrollGuide.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    worksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+
+            const startTime = performance.now();
+            let lastTime = startTime;
+
+            function animate(currentTime) {
+                const dt = Math.min((currentTime - lastTime) / 1000, 0.05);
+                lastTime = currentTime;
+                const elapsed = currentTime - startTime;
+
+                mouse.x += (targetMouse.x - mouse.x) * 0.05;
+                mouse.y += (targetMouse.y - mouse.y) * 0.05;
+
+                ctx.clearRect(0, 0, width, height);
+
+                for (let star of stars) {
+                    star.update(elapsed);
+                    star.draw();
+                }
+
+                updateTrail(dt);
+                drawTrail(elapsed);
+
+                updateRipples(dt);
+                drawRipples();
+
+                sphereAngle = elapsed * 0.0011;
+
+                sphereClickScale += (1 - sphereClickScale) * 0.12;
+                sphereScale += (sphereClickScale - sphereScale) * 0.15;
+
+                if (finePointer) drawSphere();
+
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resize);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('touchmove', onTouchMove, { passive: true });
+            window.addEventListener('touchend', onTouchEnd);
+            window.addEventListener('pointerdown', onPointerDown);
+            document.documentElement.addEventListener('mouseleave', onMouseLeave);
+
+            resize();
+            pointerX = width / 2;
+            pointerY = height / 2;
+
+            requestAnimationFrame(animate);
+        })();
+    </script>
+
+    <!-- ==================== 图片作品轮播（拖动查看） ==================== -->
+    <script>
+        (function () {
+            const carousel = document.getElementById('img-carousel');
+            const stage = document.getElementById('img-stage');
+            const dotsEl = document.getElementById('img-dots');
+            const hintEl = document.getElementById('img-hint');
+            if (!carousel || !stage) return;
+
+            const items = Array.prototype.slice.call(stage.querySelectorAll('.carousel-item'));
+            const n = items.length;
+            if (n === 0) return;
+
+            const AUTO_INTERVAL = 4500;
+            const DRAG_THRESHOLD = 6;
+            const SPRING = 0.18;
+            const DRAG_GAIN = 1.8;   // 拖动灵敏度：越大越灵敏
+
+            let position = 0;
+            let targetPosition = 0;
+            let positionAnimating = false;
+            let activeIndex = 0;
+
+            let isDragging = false;
+            let dragMoved = false;
+            let dragStartX = 0;
+            let dragBasePos = 0;
+
+            let hintUsed = false;
+            let hoveringCard = false;
+            let carouselVisible = false;
+            let autoTimer = null;
+
+            function getStepX() {
+                const cardW = items[0].offsetWidth || 720;
+                const carouselW = carousel.clientWidth || 1200;
+                return Math.min(cardW * 0.54, carouselW * 0.4);
+            }
+
+            function wrapOffset(offset) {
+                return offset - n * Math.floor(offset / n + 0.5);
+            }
+
+            function render() {
+                const stepX = getStepX();
+
+                items.forEach(function (item, i) {
+                    const offset = wrapOffset(i - position);
+                    const abs = Math.abs(offset);
+                    const clamped = Math.max(-2, Math.min(2, offset));
+
+                    const x = clamped * stepX;
+                    const z = -abs * 300;
+                    const ry = -clamped * 32;
+                    const scale = abs < 0.01 ? 1 : Math.max(0.48, 1 - abs * 0.3);
+
+                    const opacity = abs > 1.85
+                        ? 0
+                        : (abs <= 1
+                            ? Math.max(0.18, 1 - abs * 0.42)
+                            : Math.max(0, 0.58 * (1.85 - abs) / 0.85));
+
+                    const zIndex = 200 - Math.round(abs * 20);
+
+                    item.style.transform =
+                        'translate(-50%, -50%) translate3d(' + x + 'px, 0, ' + z + 'px) ' +
+                        'rotateY(' + ry + 'deg) scale(' + scale + ')';
+                    item.style.opacity = opacity;
+                    item.style.zIndex = zIndex;
+                    item.style.pointerEvents = abs > 1.85 ? 'none' : 'auto';
+                    item.classList.toggle('is-active', abs < 0.5);
+                    item.setAttribute('aria-hidden', abs > 1.85 ? 'true' : 'false');
+                });
+
+                activeIndex = ((Math.round(position) % n) + n) % n;
+                dotEls.forEach(function (d, i) {
+                    d.classList.toggle('is-active', i === activeIndex);
+                });
+            }
+
+            function stepPosition() {
+                if (!positionAnimating) return;
+
+                const diff = targetPosition - position;
+                if (Math.abs(diff) < 0.001) {
+                    position = targetPosition;
+
+                    if (Math.abs(position) >= n) {
+                        const shift = Math.floor(position / n) * n;
+                        position -= shift;
+                        targetPosition -= shift;
+                    }
+
+                    positionAnimating = false;
+                    render();
+                    return;
+                }
+
+                position += diff * SPRING;
+                render();
+                requestAnimationFrame(stepPosition);
+            }
+
+            function animatePosition() {
+                if (positionAnimating) return;
+                positionAnimating = true;
+                requestAnimationFrame(stepPosition);
+            }
+
+            function stopAnimation() {
+                positionAnimating = false;
+            }
+
+            const dotEls = items.map(function (_, i) {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'carousel-dot';
+                b.setAttribute('aria-label', '切换到第 ' + (i + 1) + ' 张图片作品');
+                b.addEventListener('click', function () {
+                    let diff = i - position;
+                    diff = diff - n * Math.round(diff / n);
+                    if (Math.abs(diff) < 0.01) return;
+                    stopAnimation();
+                    targetPosition = position + diff;
+                    animatePosition();
+                    dismissHint();
+                    scheduleAuto();
+                });
+                dotsEl.appendChild(b);
+                return b;
+            });
+
+            function dismissHint() {
+                if (hintUsed || !hintEl) return;
+                hintUsed = true;
+                hintEl.classList.add('is-gone');
+            }
+
+            function scheduleAuto() {
+                if (autoTimer) clearTimeout(autoTimer);
+                autoTimer = setTimeout(function () {
+                    if (!document.hidden && !hoveringCard && carouselVisible &&
+                        !isDragging && !positionAnimating) {
+                        targetPosition = Math.round(position) + 1;
+                        animatePosition();
+                    }
+                    scheduleAuto();
+                }, AUTO_INTERVAL);
+            }
+
+            function stopAuto() {
+                if (autoTimer) {
+                    clearTimeout(autoTimer);
+                    autoTimer = null;
+                }
+            }
+
+            carousel.addEventListener('mouseover', function (e) {
+                const card = e.target.closest && e.target.closest('.carousel-item');
+                if (card && card.style.pointerEvents !== 'none') hoveringCard = true;
+            });
+
+            carousel.addEventListener('mouseout', function (e) {
+                const to = e.relatedTarget;
+                if (!to || !to.closest || !to.closest('.carousel-item')) hoveringCard = false;
+            });
+
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        const wasVisible = carouselVisible;
+                        carouselVisible = entry.isIntersecting;
+                        if (carouselVisible && !wasVisible) scheduleAuto();
+                        if (!carouselVisible) stopAuto();
+                    });
+                }, { threshold: 0.15 });
+                io.observe(carousel);
+            } else {
+                carouselVisible = true;
+            }
+
+            carousel.addEventListener('pointerdown', function (e) {
+                if (e.pointerType !== 'mouse') return;
+                if (e.button !== 0) return;
+                if (e.target.closest && e.target.closest('.carousel-dot')) return;
+
+                stopAnimation();
+
+                isDragging = true;
+                dragMoved = false;
+                dragStartX = e.clientX;
+                dragBasePos = position;
+
+                carousel.classList.add('is-dragging');
+
+                try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
+            });
+
+            carousel.addEventListener('pointermove', function (e) {
+                if (!isDragging) return;
+                if (e.pointerType !== 'mouse') return;
+
+                const dx = e.clientX - dragStartX;
+
+                if (!dragMoved) {
+                    if (Math.abs(dx) < DRAG_THRESHOLD) return;
+                    dragMoved = true;
+                    dismissHint();
+                }
+
+                position = dragBasePos - (dx / getStepX()) * DRAG_GAIN;
+                render();
+            });
+
+            function finishDrag(e, cancelled) {
+                if (!isDragging) return;
+                isDragging = false;
+                carousel.classList.remove('is-dragging');
+
+                try {
+                    if (e && e.pointerId != null) {
+                        carousel.releasePointerCapture(e.pointerId);
+                    }
+                } catch (err) {}
+
+                if (dragMoved) {
+                    targetPosition = Math.round(position);
+                    animatePosition();
+                }
+            }
+
+            carousel.addEventListener('pointerup', function (e) { finishDrag(e, false); });
+            carousel.addEventListener('pointercancel', function (e) { finishDrag(e, true); });
+
+            carousel.setAttribute('tabindex', '0');
+            carousel.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    stopAnimation();
+                    targetPosition = Math.round(position) - 1;
+                    animatePosition();
+                    dismissHint();
+                    scheduleAuto();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    stopAnimation();
+                    targetPosition = Math.round(position) + 1;
+                    animatePosition();
+                    dismissHint();
+                    scheduleAuto();
+                }
+            });
+
+            let touchStartX = null;
+            carousel.addEventListener('touchstart', function (e) {
+                if (e.touches.length !== 1) return;
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+
+            carousel.addEventListener('touchend', function (e) {
+                if (touchStartX === null) return;
+                const t = e.changedTouches[0];
+                const dx = t.clientX - touchStartX;
+                touchStartX = null;
+
+                if (Math.abs(dx) < 50) return;
+                const dir = dx < 0 ? 1 : -1;
+                stopAnimation();
+                targetPosition = Math.round(position) + dir;
+                animatePosition();
+                dismissHint();
+                scheduleAuto();
+            }, { passive: true });
+
+            let resizeTimer = null;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(render, 150);
+            });
+
+            requestAnimationFrame(function () {
+                render();
+                scheduleAuto();
+            });
+        })();
+    </script>
+
+    <!-- ==================== 视频 3D 空间画廊 + Lightbox ==================== -->
+    <script>
+        (function () {
+            const gallery = document.getElementById('video-gallery');
+            const stage = document.getElementById('gallery-stage');
+            const lightbox = document.getElementById('video-lightbox');
+            const lightboxVideo = document.getElementById('lightbox-video');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            if (!gallery || !stage) return;
+
+            const items = Array.prototype.slice.call(stage.querySelectorAll('.video-item'));
+            if (items.length === 0) return;
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const isTouch = window.matchMedia('(hover: none)').matches;
+
+            const SPREAD = 1500;
+            const BASE_SPEED = isTouch ? 38 : 62;
+            const ITEM_COUNT = items.length;
+            const CARD_GAP = SPREAD / ITEM_COUNT;
+            const DRAG_GAIN = 1.8;   // 拖动灵敏度：越大越灵敏
+
+            let offset = 0;
+            let last = performance.now();
+            let targetSpeedFactor = 1;
+            let speedFactor = 1;
+            let resumeTimer = null;
+            let galleryVisible = true;
+
+            let wheelOffset = 0;
+            let wheelOffsetTarget = 0;
+
+            const state = items.map(function (item, i) {
+                return {
+                    baseX: (i / ITEM_COUNT) * SPREAD,
+                    y: (Math.random() - 0.5) * 110,
+                    z: -Math.random() * 260,
+                    rotY: (Math.random() - 0.5) * 22,
+                    rotZ: (Math.random() - 0.5) * 6,
+                    scaleBase: 0.86 + Math.random() * 0.16
+                };
+            });
+
+            function layout() {
+                const totalOffset = offset + wheelOffset;
+                items.forEach(function (item, i) {
+                    const s = state[i];
+                    let x = (s.baseX + totalOffset) % SPREAD;
+                    if (x < 0) x += SPREAD;
+                    const screenX = x - SPREAD / 2;
+
+                    const depth = 1 - Math.min(1, Math.abs(screenX) / (SPREAD / 2));
+
+                    const z = s.z + depth * 280;
+                    const scale = s.scaleBase * (0.72 + depth * 0.46);
+                    const opacity = 0.16 + depth * 0.84;
+                    const zIndex = Math.round(depth * 100);
+
+                    item.style.transform =
+                        'translate(-50%, -50%) ' +
+                        'translate3d(' + screenX.toFixed(2) + 'px, ' + s.y.toFixed(2) + 'px, ' + z.toFixed(2) + 'px) ' +
+                        'rotateY(' + s.rotY.toFixed(2) + 'deg) ' +
+                        'rotateZ(' + s.rotZ.toFixed(2) + 'deg) ' +
+                        'scale(' + scale.toFixed(3) + ')';
+                    item.style.opacity = opacity.toFixed(3);
+                    item.style.zIndex = zIndex;
+                });
+            }
+
+            if ('IntersectionObserver' in window) {
+                const gio = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) { galleryVisible = entry.isIntersecting; });
+                }, { threshold: 0.05 });
+                gio.observe(gallery);
+            }
+
+            function tick(now) {
+                const dt = Math.min((now - last) / 1000, 0.05);
+                last = now;
+
+                speedFactor += (targetSpeedFactor - speedFactor) * 0.08;
+
+                if (galleryVisible) {
+                    offset += BASE_SPEED * speedFactor * dt;
+
+                    if (isDragging && dragMoved) {
+                        wheelOffset = wheelOffsetTarget;
+                    } else {
+                        wheelOffset += (wheelOffsetTarget - wheelOffset) * 0.12;
+                    }
+
+                    layout();
+                }
+
+                requestAnimationFrame(tick);
+            }
+
+            if (reduceMotion) {
+                layout();
+            } else {
+                requestAnimationFrame(tick);
+            }
+
+            if (!isTouch) {
+                gallery.addEventListener('mouseenter', function () {
+                    targetSpeedFactor = 0.08;
+                });
+                gallery.addEventListener('mouseleave', function () {
+                    targetSpeedFactor = 1;
+                });
+            }
+
+            gallery.addEventListener('touchstart', function () {
+                targetSpeedFactor = 0;
+                if (resumeTimer) clearTimeout(resumeTimer);
+            }, { passive: true });
+
+            gallery.addEventListener('touchend', function () {
+                if (resumeTimer) clearTimeout(resumeTimer);
+                resumeTimer = setTimeout(function () {
+                    targetSpeedFactor = 1;
+                }, 600);
+            }, { passive: true });
+
+            let isDragging = false;
+            let dragMoved = false;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            let dragBaseOffset = 0;
+            let dragTargetItem = null;
+            const DRAG_THRESHOLD = 6;
+
+            gallery.addEventListener('pointerdown', function (e) {
+                if (e.pointerType !== 'mouse') return;
+                if (e.button !== 0) return;
+
+                isDragging = true;
+                dragMoved = false;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+
+                wheelOffsetTarget = wheelOffset;
+                dragBaseOffset = wheelOffset;
+
+                dragTargetItem = e.target.closest && e.target.closest('.video-item');
+
+                targetSpeedFactor = 0;
+                if (resumeTimer) clearTimeout(resumeTimer);
+
+                try { gallery.setPointerCapture(e.pointerId); } catch (err) {}
+            });
+
+            gallery.addEventListener('pointermove', function (e) {
+                if (!isDragging) return;
+                if (e.pointerType !== 'mouse') return;
+
+                const dx = e.clientX - dragStartX;
+                const dy = e.clientY - dragStartY;
+
+                if (!dragMoved) {
+                    if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+                        dragMoved = true;
+                    } else {
+                        return;
+                    }
+                }
+
+                wheelOffsetTarget = dragBaseOffset + dx * DRAG_GAIN;
+            });
+
+            function finishDrag(e, cancelled) {
+                if (!isDragging) return;
+                isDragging = false;
+
+                try {
+                    if (e && e.pointerId != null) {
+                        gallery.releasePointerCapture(e.pointerId);
+                    }
+                } catch (err) {}
+
+                if (dragMoved) {
+                    wheelOffsetTarget = Math.round(wheelOffset / CARD_GAP) * CARD_GAP;
+                } else if (!cancelled && dragTargetItem) {
+                    const src = dragTargetItem.getAttribute('data-video');
+                    const title = dragTargetItem.getAttribute('data-title') || '';
+                    if (src) openLightbox(src, title);
+                }
+
+                dragTargetItem = null;
+
+                resumeTimer = setTimeout(function () {
+                    targetSpeedFactor = (!isTouch && gallery.matches(':hover')) ? 0.08 : 1;
+                }, dragMoved ? 600 : 100);
+            }
+
+            gallery.addEventListener('pointerup', function (e) {
+                finishDrag(e, false);
+            });
+
+            gallery.addEventListener('pointercancel', function (e) {
+                finishDrag(e, true);
+            });
+
+            const FOCUSABLE = 'button, [href], video, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+            let lastFocused = null;
+
+            function getFocusable() {
+                return Array.prototype.filter.call(
+                    lightbox.querySelectorAll(FOCUSABLE),
+                    function (el) {
+                        return !el.disabled && el.offsetParent !== null;
+                    }
+                );
+            }
+
+            function openLightbox(src, title) {
+                lastFocused = document.activeElement;
+
+                lightboxVideo.src = src;
+                lightboxCaption.textContent = title || '';
+
+                lightbox.classList.add('is-open');
+                lightbox.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('is-locked');
+
+                lightboxVideo.play().catch(function () {});
+
+                const closeBtn = lightbox.querySelector('.lightbox-close');
+                if (closeBtn) {
+                    closeBtn.focus({ preventScroll: true });
+                } else {
+                    lightboxVideo.focus({ preventScroll: true });
+                }
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('is-open');
+                lightbox.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('is-locked');
+
+                lightboxVideo.pause();
+                lightboxVideo.removeAttribute('src');
+                lightboxVideo.load();
+
+                if (lastFocused && typeof lastFocused.focus === 'function') {
+                    lastFocused.focus({ preventScroll: true });
+                }
+            }
+
+            lightbox.addEventListener('keydown', function (e) {
+                if (e.key !== 'Tab') return;
+                if (!lightbox.classList.contains('is-open')) return;
+
+                const focusables = getFocusable();
+                if (focusables.length === 0) return;
+
+                const first = focusables[0];
+                const lastEl = focusables[focusables.length - 1];
+
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    lastEl.focus();
+                } else if (!e.shiftKey && document.activeElement === lastEl) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            });
+
+            lightboxVideo.addEventListener('error', function () {
+                lightboxCaption.textContent = '视频加载失败，请检查网络或更换视频源';
+            });
+
+            items.forEach(function (item) {
+                item.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const src = item.getAttribute('data-video');
+                        const title = item.getAttribute('data-title') || '';
+                        if (src) openLightbox(src, title);
+                    }
+                });
+            });
+
+            Array.prototype.forEach.call(
+                lightbox.querySelectorAll('[data-close]'),
+                function (el) {
+                    el.addEventListener('click', closeLightbox);
+                }
+            );
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
+                    closeLightbox();
+                }
+            });
+
+            let resizeTimer = null;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(layout, 150);
+            });
+        })();
+    </script>
+
+    <!-- ==================== 经历条目滚动显现 ==================== -->
+    <script>
+        (function () {
+            const items = document.querySelectorAll('.timeline-item');
+            if (!items.length) return;
+
+            if (!('IntersectionObserver' in window)) {
+                items.forEach(function (el) { el.classList.add('is-visible'); });
+                return;
+            }
+
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.25 });
+
+            items.forEach(function (el) { io.observe(el); });
+        })();
+    </script>
+</body>
+</html>
