@@ -637,31 +637,18 @@
     .thumb-bg {
         position: absolute;
         inset: 0;
+        background-color: rgba(255, 255, 255, .04);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         transition: transform .6s cubic-bezier(.22, .61, .36, 1);
     }
 
     .video-item:hover .thumb-bg { transform: scale(1.1); }
 
-    .thumb-bg.bg-1 {
-        background:
-            radial-gradient(circle at 30% 32%, rgba(255,255,255,.24), transparent 58%),
-            radial-gradient(circle at 76% 72%, rgba(255,255,255,.1), transparent 52%),
-            linear-gradient(135deg, #1a1a2c 0%, #0a0a14 60%, #14141f 100%);
-    }
-
-    .thumb-bg.bg-2 {
-        background:
-            radial-gradient(circle at 68% 28%, rgba(255,255,255,.22), transparent 56%),
-            radial-gradient(circle at 24% 74%, rgba(255,255,255,.1), transparent 50%),
-            linear-gradient(135deg, #20162a 0%, #0d0a14 60%, #1a1024 100%);
-    }
-
-    .thumb-bg.bg-3 {
-        background:
-            radial-gradient(circle at 50% 70%, rgba(255,255,255,.22), transparent 58%),
-            radial-gradient(circle at 26% 26%, rgba(255,255,255,.1), transparent 50%),
-            linear-gradient(135deg, #101a24 0%, #080c12 60%, #14202c 100%);
-    }
+    .thumb-bg.bg-1 { background-image: url("assets/video-01.jpg"); }
+    .thumb-bg.bg-2 { background-image: url("assets/video-02.jpg"); }
+    .thumb-bg.bg-3 { background-image: url("assets/video-03.jpg"); }
 
     .play-btn {
         position: absolute;
@@ -1367,52 +1354,52 @@
                         <div class="gallery-stage" id="gallery-stage">
 
                             <article class="video-item" tabindex="0" role="button"
-                                     data-video="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-                                     data-title="光年之外 · 视觉概念短片">
+                                     data-video="assets/video-01.mp4"
+                                     data-title="与君共良辰 · 古装婚仪剧情短片">
                                 <div class="video-card">
                                     <div class="video-thumb">
                                         <div class="thumb-bg bg-1"></div>
                                         <span class="play-btn"></span>
-                                        <span class="duration">01:24</span>
+                                        <span class="duration">01:15</span>
                                     </div>
                                     <div class="video-info">
-                                        <h3 class="video-title">光年之外</h3>
-                                        <p class="video-desc">关于遥远星系与未知边界的视觉概念短片。</p>
-                                        <span class="video-tag">Motion</span>
+                                        <h3 class="video-title">与君共良辰</h3>
+                                        <p class="video-desc">中式婚礼的完整仪式线：描眉、整衣、撒五谷拜堂。不靠台词，用仪式细节讲一场成家。</p>
+                                        <span class="video-tag">Narrative</span>
                                     </div>
                                 </div>
                             </article>
 
                             <article class="video-item" tabindex="0" role="button"
-                                     data-video="https://www.w3schools.com/html/mov_bbb.mp4"
-                                     data-title="引力波场 · 循环影像">
+                                     data-video="assets/video-02.mp4"
+                                     data-title="湘剧 · 非遗传承剧情短片">
                                 <div class="video-card">
                                     <div class="video-thumb">
                                         <div class="thumb-bg bg-2"></div>
                                         <span class="play-btn"></span>
-                                        <span class="duration">00:48</span>
+                                        <span class="duration">01:44</span>
                                     </div>
                                     <div class="video-info">
-                                        <h3 class="video-title">引力波场</h3>
-                                        <p class="video-desc">以动态噪点与波纹模拟引力场扰动的循环影像。</p>
-                                        <span class="video-tag">Loop</span>
+                                        <h3 class="video-title">湘剧</h3>
+                                        <p class="video-desc">非遗传承。老师父把行头交到年轻学徒手上，台下孩子仰头看戏——一出好戏，两头都有人在守。</p>
+                                        <span class="video-tag">Heritage</span>
                                     </div>
                                 </div>
                             </article>
 
                             <article class="video-item" tabindex="0" role="button"
-                                     data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                                     data-title="视差之旅 · 沉浸式旅程">
+                                     data-video="assets/video-03.mp4"
+                                     data-title="等我 · 跨时代爱情短片">
                                 <div class="video-card">
                                     <div class="video-thumb">
                                         <div class="thumb-bg bg-3"></div>
                                         <span class="play-btn"></span>
-                                        <span class="duration">02:12</span>
+                                        <span class="duration">00:47</span>
                                     </div>
                                     <div class="video-info">
-                                        <h3 class="video-title">视差之旅</h3>
-                                        <p class="video-desc">跟随镜头穿越星际尘埃的沉浸式旅程。</p>
-                                        <span class="video-tag">Short Film</span>
+                                        <h3 class="video-title">等我</h3>
+                                        <p class="video-desc">横跨古装、民国与现代三段时空的爱情短片。柳下相遇、洋房告别、婚纱执手，一句"等我"串起三生。</p>
+                                        <span class="video-tag">Drama</span>
                                     </div>
                                 </div>
                             </article>
