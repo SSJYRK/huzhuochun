@@ -2280,6 +2280,7 @@
             let dragStartX = 0;
             let dragBasePos = 0;
             let lastDragEndAt = 0;   // 刚结束拖拽/滑动的时间点，用于抑制随后触发的 click
+            let dragTargetItem = null;   // pointerdown 时按下的那张卡
 
             let hintUsed = false;
             let hoveringCard = false;
@@ -2435,9 +2436,16 @@
             }
 
             carousel.addEventListener('pointerdown', function (e) {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+                // 先记下按下的是哪张卡：鼠标会做指针捕获，之后的 click.target 会变成容器本身
+                const onDot = !!(e.target.closest && e.target.closest('.carousel-dot'));
+                dragTargetItem = (!onDot && e.target.closest)
+                    ? e.target.closest('.carousel-item')
+                    : null;
+
                 if (e.pointerType !== 'mouse') return;
-                if (e.button !== 0) return;
-                if (e.target.closest && e.target.closest('.carousel-dot')) return;
+                if (onDot) return;
 
                 stopAnimation();
 
@@ -2482,7 +2490,12 @@
                     lastDragEndAt = performance.now();
                     targetPosition = Math.round(position);
                     animatePosition();
+                } else if (!cancelled) {
+                    // 鼠标：没有位移就是点击，直接打开按下时记下的那张
+                    openItem(dragTargetItem);
                 }
+
+                dragTargetItem = null;
             }
 
             carousel.addEventListener('pointerup', function (e) { finishDrag(e, false); });
@@ -2572,6 +2585,16 @@
                 scheduleAuto();
             }
 
+            function openItem(item) {
+                if (!item) return;
+                if (imgLightbox && imgLightbox.classList.contains('is-open')) return;
+
+                const img = item.querySelector('.work-thumb img');
+                if (!img) return;
+
+                openImgLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+            }
+
             carousel.addEventListener('click', function (e) {
                 const t = e.target;
                 if (!t || !t.closest) return;
@@ -2579,13 +2602,7 @@
                 // 刚拖过/划过就不要再当成点击
                 if (performance.now() - lastDragEndAt < 320) return;
 
-                const item = t.closest('.carousel-item');
-                if (!item) return;
-
-                const img = item.querySelector('.work-thumb img');
-                if (!img) return;
-
-                openImgLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+                openItem(t.closest('.carousel-item'));
             });
 
             carousel.addEventListener('keydown', function (e) {
@@ -2594,8 +2611,7 @@
                 if (!item) return;
 
                 e.preventDefault();
-                const img = item.querySelector('.work-thumb img');
-                if (img) openImgLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+                openItem(item);
             });
 
             if (imgLightbox) {
