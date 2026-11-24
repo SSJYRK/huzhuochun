@@ -1097,6 +1097,16 @@
         object-fit: contain;
     }
 
+    .lightbox-panel img {
+        display: block;
+        width: 100%;
+        max-height: 76vh;
+        background: #0a0a12;
+        object-fit: contain;
+        -webkit-user-drag: none;
+        user-select: none;
+    }
+
     .lightbox-close {
         position: absolute;
         top: 12px;
@@ -1292,7 +1302,7 @@
                          role="region" aria-roledescription="carousel" aria-label="图片作品轮播">
                         <div class="carousel-stage" id="img-stage">
 
-                            <article class="carousel-item">
+                            <article class="carousel-item" tabindex="0" role="button">
                                 <div class="card-float">
                                     <div class="card-inner">
                                         <div class="work-thumb">
@@ -1310,7 +1320,7 @@
                                 </div>
                             </article>
 
-                            <article class="carousel-item">
+                            <article class="carousel-item" tabindex="0" role="button">
                                 <div class="card-float">
                                     <div class="card-inner">
                                         <div class="work-thumb">
@@ -1328,7 +1338,7 @@
                                 </div>
                             </article>
 
-                            <article class="carousel-item">
+                            <article class="carousel-item" tabindex="0" role="button">
                                 <div class="card-float">
                                     <div class="card-inner">
                                         <div class="work-thumb">
@@ -1741,6 +1751,16 @@
             <button type="button" class="lightbox-close" data-close aria-label="关闭">×</button>
             <video id="lightbox-video" controls playsinline preload="metadata"></video>
             <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <!-- ==================== 图片 Lightbox ==================== -->
+    <div class="video-lightbox" id="img-lightbox" aria-hidden="true">
+        <div class="lightbox-backdrop" data-close></div>
+        <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="图片查看">
+            <button type="button" class="lightbox-close" data-close aria-label="关闭">×</button>
+            <img id="lightbox-img" alt="">
+            <div class="lightbox-caption" id="img-caption"></div>
         </div>
     </div>
 
@@ -2259,6 +2279,7 @@
             let dragMoved = false;
             let dragStartX = 0;
             let dragBasePos = 0;
+            let lastDragEndAt = 0;   // 刚结束拖拽/滑动的时间点，用于抑制随后触发的 click
 
             let hintUsed = false;
             let hoveringCard = false;
@@ -2458,6 +2479,7 @@
                 } catch (err) {}
 
                 if (dragMoved) {
+                    lastDragEndAt = performance.now();
                     targetPosition = Math.round(position);
                     animatePosition();
                 }
@@ -2498,6 +2520,7 @@
                 touchStartX = null;
 
                 if (Math.abs(dx) < 50) return;
+                lastDragEndAt = performance.now();
                 const dir = dx < 0 ? 1 : -1;
                 stopAnimation();
                 targetPosition = Math.round(position) + dir;
@@ -2510,6 +2533,87 @@
             window.addEventListener('resize', function () {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(render, 150);
+            });
+
+            /* ---------- 点击作品图放大查看 ---------- */
+            const imgLightbox = document.getElementById('img-lightbox');
+            const imgLightboxEl = document.getElementById('lightbox-img');
+            const imgCaption = document.getElementById('img-caption');
+            let imgLastFocused = null;
+
+            function openImgLightbox(src, caption) {
+                if (!imgLightbox || !imgLightboxEl || !src) return;
+
+                imgLastFocused = document.activeElement;
+                imgLightboxEl.src = src;
+                imgLightboxEl.alt = caption || '';
+                if (imgCaption) imgCaption.textContent = caption || '';
+
+                imgLightbox.classList.add('is-open');
+                imgLightbox.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('is-locked');
+
+                const btn = imgLightbox.querySelector('.lightbox-close');
+                (btn || imgLightboxEl).focus({ preventScroll: true });
+            }
+
+            function closeImgLightbox() {
+                if (!imgLightbox || !imgLightbox.classList.contains('is-open')) return;
+
+                imgLightbox.classList.remove('is-open');
+                imgLightbox.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('is-locked');
+                imgLightboxEl.removeAttribute('src');
+
+                if (imgLastFocused && typeof imgLastFocused.focus === 'function') {
+                    imgLastFocused.focus({ preventScroll: true });
+                }
+
+                scheduleAuto();
+            }
+
+            carousel.addEventListener('click', function (e) {
+                const t = e.target;
+                if (!t || !t.closest) return;
+                if (t.closest('.carousel-dot')) return;
+                // 刚拖过/划过就不要再当成点击
+                if (performance.now() - lastDragEndAt < 320) return;
+
+                const item = t.closest('.carousel-item');
+                if (!item) return;
+
+                const img = item.querySelector('.work-thumb img');
+                if (!img) return;
+
+                openImgLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+            });
+
+            carousel.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                const item = e.target.closest && e.target.closest('.carousel-item');
+                if (!item) return;
+
+                e.preventDefault();
+                const img = item.querySelector('.work-thumb img');
+                if (img) openImgLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+            });
+
+            if (imgLightbox) {
+                Array.prototype.forEach.call(
+                    imgLightbox.querySelectorAll('[data-close]'),
+                    function (el) { el.addEventListener('click', closeImgLightbox); }
+                );
+
+                imgLightbox.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        closeImgLightbox();
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeImgLightbox();
             });
 
             requestAnimationFrame(function () {
