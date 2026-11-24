@@ -11,7 +11,7 @@
         --font-cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html { scroll-behavior: smooth; }
     html, body { min-height: 100%; }
 
@@ -611,6 +611,8 @@
         overflow: hidden;
         background: linear-gradient(160deg, rgba(32, 36, 52, .94), rgba(10, 12, 20, .97));
         border: 1px solid rgba(255, 255, 255, .13);
+        touch-action: pan-y;
+        -webkit-tap-highlight-color: transparent;
         box-shadow:
             0 30px 60px -20px rgba(0, 0, 0, .92),
             inset 0 1px 0 rgba(255, 255, 255, .07);
