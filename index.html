@@ -601,7 +601,6 @@
         width: clamp(260px, 22vw, 320px);
         transform-style: preserve-3d;
         will-change: transform, opacity;
-        transition: opacity .3s ease;
     }
 
     .video-card {
@@ -629,6 +628,18 @@
             0 44px 84px -22px rgba(0, 0, 0, .96),
             0 0 54px rgba(255, 255, 255, .14),
             inset 0 1px 0 rgba(255, 255, 255, .14);
+    }
+
+    /* 触屏：大半径模糊阴影每帧重新栅格化是主要卡顿源，换成轻量阴影并关掉过渡 */
+    @media (hover: none) {
+        .video-item { will-change: transform; }
+
+        .video-card {
+            transition: none;
+            box-shadow:
+                0 10px 22px -10px rgba(0, 0, 0, .85),
+                inset 0 1px 0 rgba(255, 255, 255, .06);
+        }
     }
 
     .video-thumb {
@@ -2073,7 +2084,9 @@
             }
 
             function resize() {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                // 星空是全屏 Canvas 重绘，DPR 与星数是最直接的成本项，触屏降档
+                const maxDpr = finePointer ? 2 : 1.4;
+                const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
                 width = window.innerWidth;
                 height = window.innerHeight;
 
@@ -2084,8 +2097,9 @@
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
                 const area = width * height;
-                const adjustedCount = Math.floor(800 * (area / (1920 * 1080)));
-                CONFIG.starCount = Math.max(400, Math.min(2000, adjustedCount));
+                const density = finePointer ? 1 : 0.55;
+                const adjustedCount = Math.floor(800 * (area / (1920 * 1080)) * density);
+                CONFIG.starCount = Math.max(220, Math.min(2000, adjustedCount));
 
                 stars = [];
                 for (let i = 0; i < CONFIG.starCount; i++) stars.push(new Star());
@@ -2154,8 +2168,15 @@
 
             const startTime = performance.now();
             let lastTime = startTime;
+            let lastFrameAt = 0;
 
             function animate(currentTime) {
+                requestAnimationFrame(animate);
+
+                // 触屏限帧到 ~30fps，把主线程让给拖拽手势
+                if (!finePointer && currentTime - lastFrameAt < 32) return;
+                lastFrameAt = currentTime;
+
                 const dt = Math.min((currentTime - lastTime) / 1000, 0.05);
                 lastTime = currentTime;
                 const elapsed = currentTime - startTime;
@@ -2182,8 +2203,6 @@
                 sphereScale += (sphereClickScale - sphereScale) * 0.15;
 
                 if (finePointer) drawSphere();
-
-                requestAnimationFrame(animate);
             }
 
             window.addEventListener('resize', resize);
@@ -2522,7 +2541,7 @@
             const DEPTH_RANGE = 1100;                                // 超出该距离即淡出
             const BASE_SPEED = isTouch ? 38 : 62;
             const CARD_GAP = SPREAD / ITEM_COUNT;
-            const DRAG_GAIN = 1.8;   // 拖动灵敏度：越大越灵敏
+            const DRAG_GAIN = isTouch ? 2.3 : 1.8;   // 触屏放大位移比，短距离滑动也跟得上手
 
             let offset = 0;
             let last = performance.now();
@@ -2545,32 +2564,59 @@
                 };
             });
 
+            const CULL_X = DEPTH_RANGE + 220;
+
             function layout() {
                 const totalOffset = offset + wheelOffset;
-                items.forEach(function (item, i) {
+
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
                     const s = state[i];
+
                     let x = (s.baseX + totalOffset) % SPREAD;
                     if (x < 0) x += SPREAD;
                     const screenX = x - SPREAD / 2;
+                    const absX = screenX < 0 ? -screenX : screenX;
 
-                    const depth = 1 - Math.min(1, Math.abs(screenX) / DEPTH_RANGE);
+                    // 视口外的卡片整体隐藏，省掉后面的全部计算与样式写入
+                    if (absX > CULL_X) {
+                        if (!s.culled) {
+                            s.culled = true;
+                            item.style.visibility = 'hidden';
+                            item.style.pointerEvents = 'none';
+                        }
+                        continue;
+                    }
+                    if (s.culled) {
+                        s.culled = false;
+                        item.style.visibility = '';
+                        s.lastTf = '';
+                    }
+
+                    let depth = 1 - absX / DEPTH_RANGE;
+                    if (depth < 0) depth = 0;
 
                     const z = s.z + depth * 280;
                     const scale = s.scaleBase * (0.72 + depth * 0.46);
-                    const opacity = 0.16 + depth * 0.84;
-                    const zIndex = Math.round(depth * 100);
 
-                    item.style.transform =
-                        'translate(-50%, -50%) ' +
-                        'translate3d(' + screenX.toFixed(2) + 'px, ' + s.y.toFixed(2) + 'px, ' + z.toFixed(2) + 'px) ' +
+                    const tf = 'translate(-50%, -50%) translate3d(' +
+                        screenX.toFixed(1) + 'px, ' + s.y.toFixed(1) + 'px, ' + z.toFixed(1) + 'px) ' +
                         'rotateY(' + s.rotY.toFixed(2) + 'deg) ' +
                         'rotateZ(' + s.rotZ.toFixed(2) + 'deg) ' +
                         'scale(' + scale.toFixed(3) + ')';
-                    item.style.opacity = opacity.toFixed(3);
-                    item.style.zIndex = zIndex;
-                    // 边缘卡片不可点，避免误触到虚化的远处作品
-                    item.style.pointerEvents = depth < 0.32 ? 'none' : 'auto';
-                });
+
+                    // 值没变就不写 DOM，避免每帧无谓的样式重算
+                    if (tf !== s.lastTf) { item.style.transform = tf; s.lastTf = tf; }
+
+                    const op = (0.16 + depth * 0.84).toFixed(2);
+                    if (op !== s.lastOp) { item.style.opacity = op; s.lastOp = op; }
+
+                    const zi = (depth * 100) | 0;
+                    if (zi !== s.lastZi) { item.style.zIndex = zi; s.lastZi = zi; }
+
+                    const pe = depth < 0.32 ? 'none' : 'auto';
+                    if (pe !== s.lastPe) { item.style.pointerEvents = pe; s.lastPe = pe; }
+                }
             }
 
             if ('IntersectionObserver' in window) {
@@ -2592,7 +2638,7 @@
                     if (isDragging && dragMoved) {
                         wheelOffset = wheelOffsetTarget;
                     } else {
-                        wheelOffset += (wheelOffsetTarget - wheelOffset) * 0.12;
+                        wheelOffset += (wheelOffsetTarget - wheelOffset) * (isTouch ? 0.22 : 0.12);
                     }
 
                     layout();
@@ -2624,6 +2670,9 @@
             let dragStartY = 0;
             let dragBaseOffset = 0;
             let dragTargetItem = null;
+            let dragVel = 0;        // px/ms，抬手瞬间速度，用于惯性
+            let dragPrevX = 0;
+            let dragPrevT = 0;
             const DRAG_THRESHOLD = 6;
 
             gallery.addEventListener('pointerdown', function (e) {
@@ -2640,8 +2689,14 @@
 
                 dragTargetItem = e.target.closest && e.target.closest('.video-item');
 
+                // 立刻杀掉自动漂移，不等插值收敛，否则拖拽时卡片会"打滑"
                 targetSpeedFactor = 0;
+                speedFactor = 0;
                 if (resumeTimer) clearTimeout(resumeTimer);
+
+                dragVel = 0;
+                dragPrevX = e.clientX;
+                dragPrevT = performance.now();
 
                 // 只对鼠标做指针捕获；触屏交给 touch-action: pan-y 处理竖向滚动
                 if (e.pointerType === 'mouse') {
@@ -2672,6 +2727,15 @@
                 if (e.cancelable && Math.abs(dx) > 4) e.preventDefault();
 
                 wheelOffsetTarget = dragBaseOffset + dx * DRAG_GAIN;
+
+                // 采样抬手速度
+                const nowT = performance.now();
+                const gap = nowT - dragPrevT;
+                if (gap > 8) {
+                    dragVel = (e.clientX - dragPrevX) / gap;
+                    dragPrevX = e.clientX;
+                    dragPrevT = nowT;
+                }
             });
 
             function finishDrag(e, cancelled) {
@@ -2685,7 +2749,9 @@
                 } catch (err) {}
 
                 if (dragMoved) {
-                    wheelOffsetTarget = Math.round(wheelOffset / CARD_GAP) * CARD_GAP;
+                    // 惯性：按抬手瞬间速度多滑一小段，再吸附到卡片格点
+                    const fling = Math.max(-CARD_GAP * 2, Math.min(CARD_GAP * 2, dragVel * 190));
+                    wheelOffsetTarget = Math.round((wheelOffsetTarget + fling) / CARD_GAP) * CARD_GAP;
                 } else if (!cancelled && dragTargetItem) {
                     const src = dragTargetItem.getAttribute('data-video');
                     const title = dragTargetItem.getAttribute('data-title') || '';
@@ -2693,6 +2759,7 @@
                 }
 
                 dragTargetItem = null;
+                dragVel = 0;
 
                 resumeTimer = setTimeout(function () {
                     targetSpeedFactor = (!isTouch && gallery.matches(':hover')) ? 0.08 : 1;
