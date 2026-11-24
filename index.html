@@ -2842,6 +2842,26 @@
                 }
             });
 
+            // 把离中心最近的卡片吸附到正中间：
+            // 求该卡 screenX 归零所需的 wheelOffset，再取离当前位置最近的等价解（避免整圈回绕）
+            function centeredOffset(projected) {
+                const total = offset + projected;
+                let bestI = 0;
+                let best = Infinity;
+
+                for (let i = 0; i < ITEM_COUNT; i++) {
+                    const s = state[i];
+                    let x = (s.baseX + total) % SPREAD;
+                    if (x < 0) x += SPREAD;
+                    const sx = x - SPREAD / 2;
+                    const d = sx < 0 ? -sx : sx;
+                    if (d < best) { best = d; bestI = i; }
+                }
+
+                const want = SPREAD / 2 - state[bestI].baseX - offset;
+                return want + SPREAD * Math.round((projected - want) / SPREAD);
+            }
+
             function finishDrag(e, cancelled) {
                 if (!isDragging) return;
                 isDragging = false;
@@ -2853,9 +2873,13 @@
                 } catch (err) {}
 
                 if (dragMoved) {
-                    // 惯性：按抬手瞬间速度多滑一小段，再吸附到卡片格点
+                    // 惯性外推一小段，再把最近的那张吸附到正中
                     const fling = Math.max(-CARD_GAP * 2, Math.min(CARD_GAP * 2, dragVel * 190));
-                    wheelOffsetTarget = Math.round((wheelOffsetTarget + fling) / CARD_GAP) * CARD_GAP;
+                    wheelOffsetTarget = centeredOffset(wheelOffsetTarget + fling);
+
+                    // 冻结自动漂移，否则吸附完成后卡片会立刻被带离中心
+                    speedFactor = 0;
+                    targetSpeedFactor = 0;
                 } else if (!cancelled && dragTargetItem) {
                     const src = dragTargetItem.getAttribute('data-video');
                     const title = dragTargetItem.getAttribute('data-title') || '';
@@ -2866,8 +2890,9 @@
                 dragVel = 0;
 
                 resumeTimer = setTimeout(function () {
+                    // 拖动后先让卡片在正中停一会儿，再恢复正常轮播
                     targetSpeedFactor = (!isTouch && gallery.matches(':hover')) ? 0.08 : 1;
-                }, dragMoved ? 600 : 100);
+                }, dragMoved ? 3200 : 100);
             }
 
             gallery.addEventListener('pointerup', function (e) {
