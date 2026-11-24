@@ -585,6 +585,48 @@
         -webkit-user-select: none;
         user-select: none;
         -webkit-touch-callout: none;
+        cursor: grab;
+    }
+
+    /* 拖拽中：锁住光标与所有 hover 位移，避免卡片跟着鼠标乱缩、被"拽走"的错觉 */
+    .video-gallery.is-dragging {
+        cursor: grabbing;
+    }
+
+    .video-gallery.is-dragging .video-card {
+        transition: none;
+    }
+
+    .video-gallery.is-dragging .video-item:hover .video-card {
+        transform: none;
+        border-color: rgba(255, 255, 255, .13);
+        box-shadow:
+            0 30px 60px -20px rgba(0, 0, 0, .92),
+            inset 0 1px 0 rgba(255, 255, 255, .07);
+    }
+
+    .video-gallery.is-dragging .video-item:hover .thumb-bg {
+        transform: none;
+    }
+
+    .video-gallery.is-dragging .video-item:hover .play-btn {
+        background: rgba(0, 0, 0, .42);
+        border-color: rgba(255, 255, 255, .5);
+        transform: translate(-50%, -50%);
+    }
+
+    .video-gallery.is-dragging .video-item:hover .play-btn::after {
+        border-left-color: rgba(255, 255, 255, .92);
+    }
+
+    /* 封死浏览器原生拖拽（文本、图片、链接一律不许拖出去） */
+    .video-gallery,
+    .video-gallery * {
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
     }
 
     .gallery-stage {
@@ -1517,7 +1559,7 @@
                     <div class="video-gallery" id="video-gallery" aria-label="视频作品画廊">
                         <div class="gallery-stage" id="gallery-stage">
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-01.mp4"
                                      data-title="与君共良辰 · 古装婚仪剧情短片">
                                 <div class="video-card">
@@ -1534,7 +1576,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-02.mp4"
                                      data-title="湘剧 · 非遗传承剧情短片">
                                 <div class="video-card">
@@ -1551,7 +1593,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-03.mp4"
                                      data-title="等我 · 跨时代爱情短片">
                                 <div class="video-card">
@@ -1568,7 +1610,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-04.mp4"
                                      data-title="渡头几换春 · 古装江湖长片">
                                 <div class="video-card">
@@ -1585,7 +1627,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-05.mp4"
                                      data-title="无名 · 抗战题材献礼片">
                                 <div class="video-card">
@@ -1602,7 +1644,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-06.mp4"
                                      data-title="万物之理 · 科技宣传片">
                                 <div class="video-card">
@@ -1619,7 +1661,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-07.mp4"
                                      data-title="风与红 · 品牌形象片">
                                 <div class="video-card">
@@ -1636,7 +1678,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-08.mp4"
                                      data-title="事与愿违 · 都市现实题材">
                                 <div class="video-card">
@@ -1653,7 +1695,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-09.mp4"
                                      data-title="欲上青天揽明月 · 中秋国风神话">
                                 <div class="video-card">
@@ -1670,7 +1712,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-10.mp4"
                                      data-title="失重 · 硬科幻短片">
                                 <div class="video-card">
@@ -1687,7 +1729,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-11.mp4"
                                      data-title="沉底 · 悬疑短片">
                                 <div class="video-card">
@@ -1704,7 +1746,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-12.mp4"
                                      data-title="囍 · 古装婚礼另一版剪辑">
                                 <div class="video-card">
@@ -1721,7 +1763,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-13.mp4"
                                      data-title="紫藤婚礼 · 现代婚礼短片">
                                 <div class="video-card">
@@ -1738,7 +1780,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-14.mp4"
                                      data-title="一杯 · 竖屏商业广告">
                                 <div class="video-card">
@@ -1755,7 +1797,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-15.mp4"
                                      data-title="红妆 · 中式婚礼短片">
                                 <div class="video-card">
@@ -1772,7 +1814,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-16.mp4"
                                      data-title="第一集 · 古装网剧">
                                 <div class="video-card">
@@ -1789,7 +1831,7 @@
                                 </div>
                             </article>
 
-                            <article class="video-item" tabindex="0" role="button"
+                            <article class="video-item" tabindex="0" role="button" draggable="false"
                                      data-video="assets/video-17.mp4"
                                      data-title="奥菲欧 · 希腊神话叙事练习">
                                 <div class="video-card">
@@ -2939,6 +2981,16 @@
             let dragPrevT = 0;
             const DRAG_THRESHOLD = 6;
 
+            // 锁死浏览器原生拖拽与文本选择：PC 按住拖动只允许驱动画廊本身，
+            // 否则选中的文字/封面会被浏览器当成拖拽源整块拖出去
+            gallery.addEventListener('dragstart', function (e) {
+                e.preventDefault();
+                return false;
+            });
+            gallery.addEventListener('selectstart', function (e) {
+                e.preventDefault();
+            });
+
             gallery.addEventListener('pointerdown', function (e) {
                 // 鼠标只认左键；触屏/触控笔一律放行
                 if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -2985,6 +3037,7 @@
                         return;
                     }
                     dragMoved = true;
+                    gallery.classList.add('is-dragging');
                 }
 
                 // 确认是横向拖动后阻止浏览器接管，避免与页面滚动抢手势
@@ -3025,6 +3078,7 @@
             function finishDrag(e, cancelled) {
                 if (!isDragging) return;
                 isDragging = false;
+                gallery.classList.remove('is-dragging');
 
                 try {
                     if (e && e.pointerId != null) {
