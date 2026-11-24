@@ -584,6 +584,7 @@
         touch-action: pan-y;
         -webkit-user-select: none;
         user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .gallery-stage {
@@ -2613,17 +2614,7 @@
                 });
             }
 
-            gallery.addEventListener('touchstart', function () {
-                targetSpeedFactor = 0;
-                if (resumeTimer) clearTimeout(resumeTimer);
-            }, { passive: true });
-
-            gallery.addEventListener('touchend', function () {
-                if (resumeTimer) clearTimeout(resumeTimer);
-                resumeTimer = setTimeout(function () {
-                    targetSpeedFactor = 1;
-                }, 600);
-            }, { passive: true });
+            // 触屏的暂停/恢复统一由 pointerdown / finishDrag 处理，无需再挂 touch 事件
 
             let isDragging = false;
             let dragMoved = false;
@@ -2634,8 +2625,8 @@
             const DRAG_THRESHOLD = 6;
 
             gallery.addEventListener('pointerdown', function (e) {
-                if (e.pointerType !== 'mouse') return;
-                if (e.button !== 0) return;
+                // 鼠标只认左键；触屏/触控笔一律放行
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
 
                 isDragging = true;
                 dragMoved = false;
@@ -2650,23 +2641,33 @@
                 targetSpeedFactor = 0;
                 if (resumeTimer) clearTimeout(resumeTimer);
 
-                try { gallery.setPointerCapture(e.pointerId); } catch (err) {}
+                // 只对鼠标做指针捕获；触屏交给 touch-action: pan-y 处理竖向滚动
+                if (e.pointerType === 'mouse') {
+                    try { gallery.setPointerCapture(e.pointerId); } catch (err) {}
+                }
             });
 
             gallery.addEventListener('pointermove', function (e) {
                 if (!isDragging) return;
-                if (e.pointerType !== 'mouse') return;
 
                 const dx = e.clientX - dragStartX;
                 const dy = e.clientY - dragStartY;
 
                 if (!dragMoved) {
-                    if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
-                        dragMoved = true;
-                    } else {
+                    if (Math.hypot(dx, dy) <= DRAG_THRESHOLD) return;
+
+                    // 手指竖向意图优先：交还页面滚动，本次手势作废
+                    if (Math.abs(dy) > Math.abs(dx)) {
+                        isDragging = false;
+                        dragTargetItem = null;
+                        targetSpeedFactor = 1;
                         return;
                     }
+                    dragMoved = true;
                 }
+
+                // 确认是横向拖动后阻止浏览器接管，避免与页面滚动抢手势
+                if (e.cancelable && Math.abs(dx) > 4) e.preventDefault();
 
                 wheelOffsetTarget = dragBaseOffset + dx * DRAG_GAIN;
             });
@@ -2719,6 +2720,7 @@
             function openLightbox(src, title) {
                 lastFocused = document.activeElement;
 
+                lightboxVideo.muted = false;
                 lightboxVideo.src = src;
                 lightboxCaption.textContent = title || '';
 
@@ -2726,13 +2728,20 @@
                 lightbox.setAttribute('aria-hidden', 'false');
                 document.body.classList.add('is-locked');
 
-                lightboxVideo.play().catch(function () {});
+                // 移动端自动播放策略更严：被拒后静音重试一次，用户可在控制条自行开声音
+                const playPromise = lightboxVideo.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(function () {
+                        lightboxVideo.muted = true;
+                        const retry = lightboxVideo.play();
+                        if (retry && typeof retry.catch === 'function') retry.catch(function () {});
+                    });
+                }
 
-                const closeBtn = lightbox.querySelector('.lightbox-close');
-                if (closeBtn) {
-                    closeBtn.focus({ preventScroll: true });
-                } else {
-                    lightboxVideo.focus({ preventScroll: true });
+                // 触屏不主动抢焦点，避免顶起视口或弹出键盘
+                if (!isTouch) {
+                    const closeBtn = lightbox.querySelector('.lightbox-close');
+                    (closeBtn || lightboxVideo).focus({ preventScroll: true });
                 }
             }
 
